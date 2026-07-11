@@ -1,0 +1,148 @@
+:root {
+  --lacivert: #16294a; --lacivert-koyu: #0d1b33; --turkuaz: #0ea5b1;
+  --turkuaz-koyu: #0b8791; --zemin: #f8fafc; --beyaz: #ffffff;
+  --gri: #64748b; --cizgi: #e5eaf1; --golge: 0 10px 30px rgba(22,41,74,.10);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--zemin); color: var(--lacivert); line-height: 1.6; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+.topbar { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--cizgi); }
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; }
+.topbar img { height: 46px; }
+.topbar nav { display: flex; align-items: center; gap: 4px; }
+.topbar nav a { color: var(--lacivert); text-decoration: none; font-weight: 600; font-size: 14.5px; padding: 8px 12px; border-radius: 8px; transition: background .15s; }
+.topbar nav a:hover { background: var(--zemin); }
+.topbar nav a.cta { background: var(--turkuaz); color: #fff; margin-left: 8px; box-shadow: 0 4px 14px rgba(14,165,177,.35); }
+.topbar nav a.cta:hover { background: var(--turkuaz-koyu); }
+
+.hero { background: radial-gradient(1100px 500px at 75% -10%, #24406e 0%, var(--lacivert) 55%, var(--lacivert-koyu) 100%); color: #fff; padding: 72px 0 84px; overflow: hidden; }
+.hero .wrap { display: grid; grid-template-columns: 1.2fr .8fr; align-items: center; gap: 32px; }
+.hero h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 800; line-height: 1.12; letter-spacing: -.02em; }
+.hero h1 em { color: var(--turkuaz); font-style: normal; }
+.hero p { color: #b9c6dd; margin-top: 16px; font-size: 18px; max-width: 46ch; }
+.hero-btnlar { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+.hero-maskot { display: flex; justify-content: center; animation: yuz 5s ease-in-out infinite; }
+@keyframes yuz { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+
+.btn { display: inline-block; background: linear-gradient(180deg, var(--turkuaz), var(--turkuaz-koyu)); color: #fff; border: none; padding: 14px 28px; border-radius: 12px; font-size: 15.5px; font-weight: 700; cursor: pointer; font-family: inherit; text-decoration: none; transition: transform .15s, box-shadow .15s; box-shadow: 0 6px 18px rgba(14,165,177,.35); }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(14,165,177,.45); }
+.btn:disabled { opacity: .55; cursor: default; transform: none; }
+.btn-gri { background: #eef2f8; color: var(--lacivert); box-shadow: none; margin-right: 10px; }
+.btn-cerceve { background: transparent; border: 2px solid rgba(255,255,255,.45); box-shadow: none; }
+.btn-cerceve:hover { border-color: var(--turkuaz); background: rgba(14,165,177,.12); }
+
+.bolum { padding: 64px 0; }
+.bolum h2 { font-size: clamp(24px, 3.4vw, 34px); font-weight: 800; letter-spacing: -.01em; text-align: center; }
+.bolum .alt-baslik { text-align: center; color: var(--gri); margin: 10px auto 40px; max-width: 60ch; }
+
+.ozellikler { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.ozellik { background: var(--beyaz); border: 1px solid var(--cizgi); border-radius: 16px; padding: 24px 20px; transition: transform .18s, box-shadow .18s; }
+.ozellik:hover { transform: translateY(-4px); box-shadow: var(--golge); }
+.ozellik .ikon { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #e6fafb, #c9f2f5); display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 14px; }
+.ozellik h3 { font-size: 16px; margin-bottom: 6px; }
+.ozellik p { color: var(--gri); font-size: 13.5px; }
+
+.urun-kartlar { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.urun-kart { position: relative; background: var(--beyaz); border: 1px solid var(--cizgi); border-radius: 20px; padding: 32px; display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; text-decoration: none; color: var(--lacivert); overflow: hidden; transition: transform .18s, box-shadow .18s, border-color .18s; }
+.urun-kart:hover { transform: translateY(-5px); box-shadow: var(--golge); border-color: #a9e8ec; }
+.urun-kart h3 { font-size: 21px; font-weight: 800; }
+.urun-kart p { color: var(--gri); font-size: 14.5px; margin-top: 8px; }
+.urun-kart .etiket { display: inline-block; background: #e6fafb; color: var(--turkuaz-koyu); font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 999px; margin-bottom: 12px; }
+.urun-kart .git { display: inline-block; margin-top: 16px; color: var(--turkuaz); font-weight: 800; }
+
+.hizmet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.hizmet { background: var(--beyaz); border: 1px solid var(--cizgi); border-radius: 14px; padding: 18px 20px; }
+.hizmet h4 { font-size: 15px; }
+.hizmet p { color: var(--gri); font-size: 13px; margin-top: 4px; }
+
+.cta-band { background: linear-gradient(120deg, var(--lacivert), #1d3a68); color: #fff; border-radius: 24px; padding: 44px 40px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.cta-band h3 { font-size: 24px; font-weight: 800; }
+.cta-band p { color: #b9c6dd; margin-top: 6px; }
+
+.panel { background: var(--beyaz); border: 1px solid var(--cizgi); border-radius: 20px; padding: 32px; margin: 32px 0; box-shadow: var(--golge); }
+.adimlar { display: flex; gap: 8px; margin-bottom: 24px; font-size: 13px; font-weight: 800; }
+.adim { padding: 7px 14px; border-radius: 999px; background: var(--zemin); color: var(--gri); }
+.adim.aktif { background: var(--turkuaz); color: #fff; box-shadow: 0 4px 12px rgba(14,165,177,.35); }
+.alan { margin-bottom: 16px; }
+.alan label { display: block; font-size: 13px; font-weight: 700; color: var(--gri); margin-bottom: 6px; }
+.alan input, .alan select { width: 100%; padding: 12px 14px; border: 1.5px solid var(--cizgi); border-radius: 11px; font-size: 15px; font-family: inherit; background: var(--beyaz); color: var(--lacivert); transition: border-color .15s, box-shadow .15s; }
+.alan input:focus, .alan select:focus { outline: none; border-color: var(--turkuaz); box-shadow: 0 0 0 4px rgba(14,165,177,.14); }
+.satir { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.radyolar { display: flex; gap: 18px; margin-top: 4px; flex-wrap: wrap; }
+.radyolar label { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.not { font-size: 13px; color: var(--gri); margin-top: 8px; }
+.basari { text-align: center; padding: 30px 0; }
+.basari h2 { color: var(--turkuaz); }
+
+.sayfa-baslik { background: linear-gradient(120deg, var(--lacivert), #1d3a68); color: #fff; padding: 48px 0; }
+.sayfa-baslik h1 { font-size: clamp(26px, 4vw, 38px); font-weight: 800; }
+.icerik { max-width: 760px; margin: 0 auto; }
+.icerik p { margin-bottom: 16px; color: #3b4a63; }
+.icerik h3 { margin: 26px 0 10px; font-size: 19px; }
+
+.sss-madde { background: var(--beyaz); border: 1px solid var(--cizgi); border-radius: 14px; margin-bottom: 12px; overflow: hidden; }
+.sss-madde button { width: 100%; text-align: left; background: none; border: none; padding: 18px 20px; font-size: 15.5px; font-weight: 700; color: var(--lacivert); cursor: pointer; font-family: inherit; display: flex; justify-content: space-between; align-items: center; }
+.sss-madde .cevap { padding: 0 20px 18px; color: var(--gri); font-size: 14.5px; }
+
+.demo-etiket { background: var(--turkuaz); color: #fff; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; padding: 4px 10px; border-radius: 999px; }
+footer { background: var(--lacivert-koyu); color: #b9c6dd; margin-top: 64px; padding: 48px 0 28px; }
+footer .wrap { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; }
+footer img { height: 44px; margin-bottom: 14px; }
+footer h4 { color: #fff; font-size: 14px; margin-bottom: 12px; letter-spacing: .04em; }
+footer a { color: #b9c6dd; text-decoration: none; display: block; font-size: 14px; margin-bottom: 8px; }
+footer a:hover { color: var(--turkuaz); }
+footer .telif { grid-column: 1 / -1; border-top: 1px solid rgba(255,255,255,.12); margin-top: 24px; padding-top: 20px; font-size: 12.5px; text-align: center; }
+
+@media (max-width: 860px) {
+  .hero .wrap { grid-template-columns: 1fr; text-align: center; }
+  .hero-btnlar { justify-content: center; }
+  .ozellikler { grid-template-columns: 1fr 1fr; }
+  .urun-kartlar, .hizmet-grid { grid-template-columns: 1fr; }
+  footer .wrap { grid-template-columns: 1fr; }
+  .satir { grid-template-columns: 1fr; }
+}
+
+/* ---- Maskot animasyonlari ---- */
+.maskot .bacak, .maskot .anten-sol, .maskot .anten-sag { transform-box: fill-box; transform-origin: top center; }
+
+.maskot .anten-sol { animation: anten-salla 3.2s ease-in-out infinite; }
+.maskot .anten-sag { animation: anten-salla 3.2s ease-in-out infinite reverse; }
+@keyframes anten-salla { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(7deg); } }
+
+.urun-kart .maskot { transition: transform .3s ease; }
+
+/* Seyahat karti: uzerine gelince bavulla yurume */
+.urun-kart:hover .maskot-bavul .karinca { animation: yuru 0.55s ease-in-out infinite; }
+.urun-kart:hover .maskot-bavul .b1, .urun-kart:hover .maskot-bavul .b4 { animation: adim 0.55s ease-in-out infinite; }
+.urun-kart:hover .maskot-bavul .b2, .urun-kart:hover .maskot-bavul .b3 { animation: adim 0.55s ease-in-out infinite reverse; }
+.urun-kart:hover .maskot-bavul .teker { transform-box: fill-box; transform-origin: center; animation: teker-don 0.7s linear infinite; }
+@keyframes yuru { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes adim { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(16deg); } }
+@keyframes teker-don { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* DASK karti: uzerine gelince karinca eve dogru gider */
+.urun-kart:hover .maskot-ev .karinca { animation: eve-git 1.6s ease-in-out forwards; }
+.urun-kart:hover .maskot-ev .b1, .urun-kart:hover .maskot-ev .b4 { animation: adim 0.5s ease-in-out 3; }
+.urun-kart:hover .maskot-ev .b2, .urun-kart:hover .maskot-ev .b3 { animation: adim 0.5s ease-in-out 3 reverse; }
+@keyframes eve-git {
+  0% { transform: translateX(0) scale(1); opacity: 1; }
+  70% { transform: translateX(52px) scale(0.72); opacity: 1; }
+  100% { transform: translateX(60px) scale(0.55); opacity: 0; }
+}
+
+/* Hero maskotu: hafif nefes alma */
+.hero-maskot .maskot .karinca { animation: nefes 4s ease-in-out infinite; }
+@keyframes nefes { 0%,100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+
+/* Hero yeni duzen: baslik ustte, animasyonlu kartlar altta */
+.hero .wrap { display: block; }
+.hero-ust { text-align: center; max-width: 640px; margin: 0 auto; }
+.hero-ust p { margin-left: auto; margin-right: auto; }
+.hero-kartlar { margin-top: 40px; }
+.hero-kartlar .urun-kart { border: none; }
+
+/* Hizmet kartlari artik tiklanabilir */
+a.hizmet { text-decoration: none; color: var(--lacivert); display: block; transition: transform .18s, box-shadow .18s, border-color .18s; }
+a.hizmet:hover { transform: translateY(-4px); box-shadow: var(--golge); border-color: #a9e8ec; }
