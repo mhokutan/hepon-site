@@ -172,6 +172,12 @@ a.hizmet:hover { transform: translateY(-4px); box-shadow: var(--golge); border-c
 
 .cta-band-iletisim { display: flex; gap: 12px; flex-wrap: wrap; }
 
+.kart-aksiyon { display: flex; align-items: center; gap: 16px; margin-top: 14px; }
+.kart-aksiyon .git { margin-top: 0; }
+.git-btn { background: none; border: none; padding: 0; cursor: pointer; font-family: inherit; font-size: 14px; }
+.detay-link { color: var(--gri); font-size: 13.5px; font-weight: 700; text-decoration: none; border-bottom: 1px dashed var(--gri); }
+.detay-link:hover { color: var(--turkuaz); border-color: var(--turkuaz); }
+
 @media (max-width: 860px) {
   .urun-grid { grid-template-columns: 1fr; }
   .adim-grid { grid-template-columns: 1fr 1fr; }

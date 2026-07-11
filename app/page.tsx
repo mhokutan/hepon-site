@@ -5,28 +5,29 @@ type Urun = {
   aciklama: string;
   ikon: string;
   etiket?: string;
-  href?: string;      // sayfaya giden kartlar
-  modal?: string;     // teklif modalini acan kartlar (data-product degeri)
+  detay: string;      // urun ic sayfasi
+  modal?: string;     // teklif modalini acan urunler (data-product degeri)
+  akis?: string;      // calisan teklif akisi olan urunler (/dask/, /seyahat/)
 };
 
 const urunler: Urun[] = [
-  { ad: "Trafik Sigortası", ikon: "🚗", etiket: "ZORUNLU", modal: "trafik",
+  { ad: "Trafik Sigortası", ikon: "🚗", etiket: "ZORUNLU", modal: "trafik", detay: "/trafik-sigortasi/",
     aciklama: "Zorunlu trafik sigortanı dakikalar içinde karşılaştır, poliçeni güvenle oluştur." },
-  { ad: "Kasko Sigortası", ikon: "🛠️", href: "/iletisim/",
+  { ad: "Kasko Sigortası", ikon: "🛠️", detay: "/kasko-sigortasi/",
     aciklama: "Aracına gelebilecek hasarlara karşı tam koruma için danışmanlarımızla teklif al." },
-  { ad: "İMM Sigortası", ikon: "📈", href: "/iletisim/",
+  { ad: "İMM Sigortası", ikon: "📈", detay: "/imm-sigortasi/",
     aciklama: "Trafik sigortası limitini aşan hasarlar için ek güvence seçeneklerini incele." },
-  { ad: "Seyahat Sağlık Sigortası", ikon: "✈️", etiket: "VİZEYE UYGUN", href: "/seyahat/",
+  { ad: "Seyahat Sağlık Sigortası", ikon: "✈️", etiket: "VİZEYE UYGUN", akis: "/seyahat/", detay: "/seyahat-saglik-sigortasi/",
     aciklama: "Yurt dışı seyahatlerinde sağlık güvencen hazır olsun. Vize başvurusuna uygun poliçe." },
-  { ad: "DASK Sigortası", ikon: "🏠", etiket: "ZORUNLU", href: "/dask/",
+  { ad: "DASK Sigortası", ikon: "🏠", etiket: "ZORUNLU", akis: "/dask/", detay: "/dask-sigortasi/",
     aciklama: "Evini deprem riskine karşı güvence altına al. UAVT kodunla dakikalar içinde teklif." },
-  { ad: "Yabancı Sağlık Sigortası", ikon: "🌍", href: "/iletisim/",
+  { ad: "Yabancı Sağlık Sigortası", ikon: "🌍", detay: "/yabanci-saglik-sigortasi/",
     aciklama: "İkamet izni başvurularına uygun, yabancılar için özel sağlık sigortası." },
-  { ad: "Tamamlayıcı Sağlık Sigortası", ikon: "🏥", href: "/iletisim/",
+  { ad: "Tamamlayıcı Sağlık Sigortası", ikon: "🏥", detay: "/tamamlayici-saglik-sigortasi/",
     aciklama: "SGK anlaşmalı özel hastanelerde fark ücreti ödemeden tedavi imkanı." },
-  { ad: "Ferdi Kaza Sigortası", ikon: "🦺", href: "/iletisim/",
+  { ad: "Ferdi Kaza Sigortası", ikon: "🦺", detay: "/ferdi-kaza-sigortasi/",
     aciklama: "Beklenmedik kazalara karşı kendini ve sevdiklerini güvence altına al." },
-  { ad: "Mesleki Sorumluluk Sigortaları", ikon: "⚖️", href: "/iletisim/",
+  { ad: "Mesleki Sorumluluk Sigortaları", ikon: "⚖️", detay: "/mesleki-sorumluluk-sigortalari/",
     aciklama: "Avukat, mühendis, hekim, müşavir ve daha fazlası için mesleki güvence." },
 ];
 
@@ -40,6 +41,42 @@ const adimlar = [
   { no: 4, baslik: "Poliçenizi Oluşturun", gorsel: "/adimlar/adim-4.png",
     metin: "Sana uygun teklifi seç, poliçeni güvenli şekilde oluştur." },
 ];
+
+function UrunKart({ u }: { u: Urun }) {
+  const govde = (
+    <>
+      <div className="ikon">{u.ikon}</div>
+      {u.etiket && <span className="etiket">{u.etiket}</span>}
+      <h4>{u.ad}</h4>
+      <p>{u.aciklama}</p>
+    </>
+  );
+
+  // Calisan akisi veya modali olan urunler: Teklif Al dogrudan akisa gider,
+  // yaninda ic sayfaya giden Detayli Bilgi baglantisi bulunur.
+  if (u.modal || u.akis) {
+    return (
+      <div className="urun-kutu">
+        {govde}
+        <div className="kart-aksiyon">
+          {u.modal ? (
+            <button className="git git-btn hepon-teklif-trigger" data-product={u.modal} type="button">Teklif Al →</button>
+          ) : (
+            <a className="git" href={u.akis}>Teklif Al →</a>
+          )}
+          <a className="detay-link" href={u.detay}>Detaylı Bilgi</a>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <a className="urun-kutu" href={u.detay}>
+      {govde}
+      <span className="git">İncele →</span>
+    </a>
+  );
+}
 
 export default function Home() {
   return (
@@ -62,25 +99,7 @@ export default function Home() {
           <h2>Sigorta Ürünlerimiz</h2>
           <p className="alt-baslik">İhtiyacına uygun ürünü seç, teklifini dakikalar içinde al.</p>
           <div className="urun-grid">
-            {urunler.map((u) =>
-              u.modal ? (
-                <button key={u.ad} className="urun-kutu hepon-teklif-trigger" data-product={u.modal} type="button">
-                  <div className="ikon">{u.ikon}</div>
-                  {u.etiket && <span className="etiket">{u.etiket}</span>}
-                  <h4>{u.ad}</h4>
-                  <p>{u.aciklama}</p>
-                  <span className="git">Teklif Al →</span>
-                </button>
-              ) : (
-                <a key={u.ad} className="urun-kutu" href={u.href}>
-                  <div className="ikon">{u.ikon}</div>
-                  {u.etiket && <span className="etiket">{u.etiket}</span>}
-                  <h4>{u.ad}</h4>
-                  <p>{u.aciklama}</p>
-                  <span className="git">Teklif Al →</span>
-                </a>
-              )
-            )}
+            {urunler.map((u) => <UrunKart key={u.ad} u={u} />)}
             <a className="urun-kutu urun-kutu-cta" href="/iletisim/">
               <div className="ikon">💙</div>
               <h4>Hayatın Her Anında Hepon&apos;la</h4>
