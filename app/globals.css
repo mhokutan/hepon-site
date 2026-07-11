@@ -146,3 +146,35 @@ footer .telif { grid-column: 1 / -1; border-top: 1px solid rgba(255,255,255,.12)
 /* Hizmet kartlari artik tiklanabilir */
 a.hizmet { text-decoration: none; color: var(--lacivert); display: block; transition: transform .18s, box-shadow .18s, border-color .18s; }
 a.hizmet:hover { transform: translateY(-4px); box-shadow: var(--golge); border-color: #a9e8ec; }
+
+/* ---- Yeni ana sayfa (tasarim entegrasyonu) ---- */
+.urun-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.urun-kutu { display: flex; flex-direction: column; align-items: flex-start; text-align: left; background: var(--beyaz); border: 1px solid var(--cizgi); border-radius: 18px; padding: 26px 24px; text-decoration: none; color: var(--lacivert); cursor: pointer; font-family: inherit; transition: transform .18s, box-shadow .18s, border-color .18s; }
+.urun-kutu:hover { transform: translateY(-4px); box-shadow: var(--golge); border-color: #a9e8ec; }
+.urun-kutu .ikon { width: 46px; height: 46px; border-radius: 12px; background: linear-gradient(135deg, #e6fafb, #c9f2f5); display: flex; align-items: center; justify-content: center; font-size: 23px; margin-bottom: 14px; }
+.urun-kutu .etiket { display: inline-block; background: #e6fafb; color: var(--turkuaz-koyu); font-size: 11.5px; font-weight: 800; padding: 3px 10px; border-radius: 999px; margin-bottom: 8px; }
+.urun-kutu h4 { font-size: 17px; font-weight: 800; }
+.urun-kutu p { color: var(--gri); font-size: 13.5px; margin-top: 6px; flex: 1; }
+.urun-kutu .git { display: inline-block; margin-top: 14px; color: var(--turkuaz); font-weight: 800; font-size: 14px; }
+.urun-kutu-cta { background: linear-gradient(120deg, var(--lacivert), #1d3a68); color: #fff; border: none; }
+.urun-kutu-cta p { color: #b9c6dd; }
+
+.anlasmali-serit { display: flex; align-items: center; justify-content: center; gap: 40px; flex-wrap: wrap; background: var(--beyaz); border: 1px solid var(--cizgi); border-radius: 18px; padding: 28px 24px; }
+.anlasmali-serit img { height: 52px; width: auto; object-fit: contain; }
+
+.adim-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.adim-kart { position: relative; background: var(--beyaz); border: 1px solid var(--cizgi); border-radius: 18px; padding: 20px; transition: transform .18s, box-shadow .18s; }
+.adim-kart:hover { transform: translateY(-4px); box-shadow: var(--golge); }
+.adim-kart img { width: 100%; height: 120px; object-fit: contain; margin-bottom: 14px; }
+.adim-kart .adim-no { position: absolute; top: 14px; left: 14px; width: 30px; height: 30px; border-radius: 999px; background: var(--turkuaz); color: #fff; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(14,165,177,.35); }
+.adim-kart h4 { font-size: 15.5px; }
+.adim-kart p { color: var(--gri); font-size: 13px; margin-top: 5px; }
+
+.cta-band-iletisim { display: flex; gap: 12px; flex-wrap: wrap; }
+
+@media (max-width: 860px) {
+  .urun-grid { grid-template-columns: 1fr; }
+  .adim-grid { grid-template-columns: 1fr 1fr; }
+  .anlasmali-serit { gap: 24px; }
+  .anlasmali-serit img { height: 40px; }
+}

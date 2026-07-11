@@ -1,0 +1,418 @@
+
+<div class="hepon-quote-modal" id="heponQuoteModal" lang="tr" aria-hidden="true">
+  <div class="hepon-quote-overlay" data-hepon-close></div>
+
+  <div
+    class="hepon-quote-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="heponQuoteTitle"
+  >
+    <div class="hepon-quote-topbar">
+      <div>
+        <div class="hepon-quote-eyebrow">HIZLI TEKLİF</div>
+
+        <h2 class="hepon-quote-title" id="heponQuoteTitle">
+          Teklif bilgilerinizi paylaşın
+        </h2>
+
+        <p class="hepon-quote-description">
+          Size uygun teklifleri karşılaştırabilmemiz için birkaç kısa bilgiye ihtiyacımız var.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="hepon-quote-close"
+        data-hepon-close
+        aria-label="Formu kapat"
+      >
+        <svg class="hepon-close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M6 6L18 18M18 6L6 18"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="hepon-quote-progress">
+      <span class="hepon-progress-item is-active"></span>
+      <span class="hepon-progress-item"></span>
+      <span class="hepon-progress-item"></span>
+      <span class="hepon-progress-item"></span>
+      <span class="hepon-progress-item"></span>
+      <span class="hepon-progress-item"></span>
+    </div>
+
+    <div class="hepon-quote-content">
+      <div class="hepon-product-summary">
+        <div class="hepon-product-icon">✓</div>
+
+        <div>
+          <div class="hepon-product-label">Seçilen sigorta</div>
+          <div class="hepon-product-name" id="heponSelectedProduct">
+            Trafik Sigortası
+          </div>
+        </div>
+      </div>
+
+      <form id="heponQuoteForm" novalidate>
+        <input type="hidden" name="product" id="heponProductInput" value="">
+
+        <section class="hepon-step is-active" data-step="1">
+          <h3 class="hepon-step-heading">Sigorta bilgileri</h3>
+
+          <p class="hepon-step-text">
+            Alanlar seçtiğiniz sigorta ürününe göre otomatik olarak düzenlenir.
+          </p>
+
+          <div class="hepon-form-grid" id="heponDynamicFields"></div>
+
+          <div class="hepon-quote-note">
+            Bu bilgiler sigorta şirketlerinden doğru tekliflerin sorgulanabilmesi için kullanılır.
+          </div>
+
+          <div class="hepon-quote-actions">
+            <div class="hepon-secure-text">🔒 Bilgileriniz güvenle korunur</div>
+
+            <div class="hepon-action-right">
+              <button
+                type="button"
+                class="hepon-button"
+                data-next-step
+              >
+                Devam Et
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="hepon-step" data-step="2">
+          <h3 class="hepon-step-heading">İletişim bilgileri</h3>
+
+          <p class="hepon-step-text">
+            Tekliflerinizi görüntülemek ve gerektiğinde size destek olmak için iletişim bilgilerinizi paylaşın.
+          </p>
+
+          <div class="hepon-form-grid">
+            <div class="hepon-field">
+              <label for="heponFullName">AD SOYAD</label>
+              <input
+                id="heponFullName"
+                name="full_name"
+                type="text"
+                placeholder="Adınız ve soyadınız"
+                required
+              >
+              <span class="hepon-field-error">Bu alan zorunludur.</span>
+            </div>
+
+            <div class="hepon-field">
+              <label for="heponPhone">TELEFON</label>
+              <input
+                id="heponPhone"
+                name="phone"
+                type="tel"
+                placeholder="05__ ___ __ __"
+                required
+              >
+              <span class="hepon-field-error">
+                Geçerli bir telefon numarası girin.
+              </span>
+            </div>
+
+            <div class="hepon-field is-full">
+              <label for="heponEmail">E-POSTA</label>
+              <input
+                id="heponEmail"
+                name="email"
+                type="email"
+                placeholder="ornek@eposta.com"
+                required
+              >
+              <span class="hepon-field-error">
+                Geçerli bir e-posta adresi girin.
+              </span>
+            </div>
+
+            <div class="hepon-field is-full hepon-consent-field">
+              <div class="hepon-checkbox-wrap">
+                <input
+                  id="heponConsent"
+                  name="consent"
+                  type="checkbox"
+                  required
+                >
+                <label for="heponConsent">
+                  Bilgilerimin teklif oluşturma, karşılaştırma ve iletişim süreçlerinde kullanılmasını kabul ediyorum.
+                </label>
+              </div>
+
+              <span class="hepon-field-error">
+                Devam etmek için onay vermelisiniz.
+              </span>
+            </div>
+          </div>
+
+          <div class="hepon-quote-actions">
+            <button
+              type="button"
+              class="hepon-button hepon-button-secondary"
+              data-prev-step
+            >
+              Geri
+            </button>
+
+            <div class="hepon-action-right">
+              <button
+                type="button"
+                class="hepon-button"
+                id="heponSearchQuotes"
+              >
+                Telefonu Doğrula ve Teklifleri Karşılaştır
+              </button>
+            </div>
+          </div>
+        </section>
+
+
+        <section class="hepon-step" data-step="3">
+          <h3 class="hepon-step-heading">Telefon doğrulama</h3>
+
+          <p class="hepon-step-text">
+            Güvenliğiniz için cep telefonunuza gönderilen 6 haneli doğrulama kodunu girin.
+          </p>
+
+          <div class="hepon-otp-card">
+            <div class="hepon-product-label">Kodun gönderildiği telefon</div>
+            <div class="hepon-otp-phone" id="heponOtpPhone">—</div>
+
+            <input
+              class="hepon-otp-input"
+              id="heponOtpCode"
+              name="otp_code"
+              type="text"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              maxlength="6"
+              pattern="[0-9]{6}"
+              placeholder="••••••"
+              aria-label="6 haneli doğrulama kodu"
+            >
+
+            <div class="hepon-otp-meta">
+              <span id="heponOtpTimer">Kod 120 saniye geçerlidir.</span>
+
+              <button
+                type="button"
+                class="hepon-otp-resend"
+                id="heponOtpResend"
+                disabled
+              >
+                Kodu Tekrar Gönder
+              </button>
+            </div>
+
+            <div
+              class="hepon-otp-message"
+              id="heponOtpMessage"
+              role="status"
+              aria-live="polite"
+            ></div>
+          </div>
+
+          <div class="hepon-quote-actions">
+            <button
+              type="button"
+              class="hepon-button hepon-button-secondary"
+              id="heponOtpBack"
+            >
+              Telefonu Düzenle
+            </button>
+
+            <div class="hepon-action-right">
+              <button
+                type="button"
+                class="hepon-button"
+                id="heponVerifyOtp"
+              >
+                Kodu Doğrula
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="hepon-step" data-step="4">
+          <div class="hepon-loading-box">
+            <div class="hepon-loader"></div>
+
+            <h3 class="hepon-loading-title">Teklifler hazırlanıyor</h3>
+
+            <p class="hepon-loading-text">
+              Sigorta şirketlerinden gelen sonuçlar ortak formatta karşılaştırılıyor. Bu işlem kısa sürebilir.
+            </p>
+
+            <div class="hepon-loading-companies">
+              <span class="hepon-loading-company">Şirket bağlantısı kontrol ediliyor</span>
+              <span class="hepon-loading-company">Fiyatlar hesaplanıyor</span>
+              <span class="hepon-loading-company">Teminatlar karşılaştırılıyor</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="hepon-step" data-step="5">
+          <div class="hepon-offers-header">
+            <div>
+              <h3 class="hepon-step-heading">Size uygun teklifler</h3>
+              <p class="hepon-step-text">
+                Fiyat ve teminat detaylarını karşılaştırarak size uygun teklifi seçebilirsiniz.
+              </p>
+            </div>
+
+            <div class="hepon-offers-count" id="heponOfferCount">
+              3 teklif bulundu
+            </div>
+          </div>
+
+          <div class="hepon-offer-list" id="heponOfferList"></div>
+
+          <div class="hepon-api-notice">
+            Bu ekranda şu an örnek teklif verileri gösterilmektedir. Gerçek şirket logoları, primler, taksitler, teminatlar ve ödeme yönlendirme bağlantısı backend üzerinden sigorta şirketi API’lerinden alınacaktır.
+          </div>
+
+          <div class="hepon-quote-actions">
+            <button
+              type="button"
+              class="hepon-button hepon-button-secondary"
+              id="heponRestart"
+            >
+              Bilgileri Düzenle
+            </button>
+          </div>
+        </section>
+
+        <section class="hepon-step" data-step="6">
+          <h3 class="hepon-step-heading">Teklif detayı ve onay</h3>
+
+          <p class="hepon-step-text">
+            Seçtiğiniz teklifin özetini kontrol edin. Ödeme Heponla tarafından alınmaz; devam ettiğinizde sigorta şirketinin güvenli ödeme sayfasına yönlendirilirsiniz.
+          </p>
+
+          <div class="hepon-selected-offer">
+            <div class="hepon-selected-offer-card">
+              <div class="hepon-selected-offer-top">
+                <div>
+                  <div
+                    class="hepon-selected-offer-company"
+                    id="heponSelectedOfferCompany"
+                  >
+                    Sigorta Şirketi
+                  </div>
+
+                  <div
+                    class="hepon-selected-offer-product"
+                    id="heponSelectedOfferProduct"
+                  >
+                    Trafik Sigortası
+                  </div>
+                </div>
+
+                <div class="hepon-selected-offer-price">
+                  <strong id="heponSelectedOfferPrice">₺0</strong>
+                  <span id="heponSelectedOfferInstallment">Taksit bilgisi</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="hepon-detail-grid">
+              <div class="hepon-detail-item">
+                <div class="hepon-detail-label">Sigortalı</div>
+                <div class="hepon-detail-value" id="heponSummaryName">—</div>
+              </div>
+
+              <div class="hepon-detail-item">
+                <div class="hepon-detail-label">Telefon</div>
+                <div class="hepon-detail-value" id="heponSummaryPhone">—</div>
+              </div>
+
+              <div class="hepon-detail-item">
+                <div class="hepon-detail-label">E-posta</div>
+                <div class="hepon-detail-value" id="heponSummaryEmail">—</div>
+              </div>
+
+              <div class="hepon-detail-item">
+                <div class="hepon-detail-label">Teklif Referansı</div>
+                <div class="hepon-detail-value" id="heponSummaryQuoteId">—</div>
+              </div>
+            </div>
+
+            <div class="hepon-detail-item">
+              <div class="hepon-detail-label">Teminat özeti</div>
+              <ul class="hepon-coverage-list" id="heponCoverageList">
+                <li>Teminat bilgileri sigorta şirketinden alınacaktır.</li>
+              </ul>
+            </div>
+
+            <div class="hepon-redirect-box">
+              <strong>Ödeme ve poliçeleştirme sigorta şirketinde tamamlanır.</strong><br>
+              Kart bilgilerinizi Heponla’ya girmeyeceksiniz. Butona bastığınızda seçilen sigorta şirketinin güvenli ödeme/poliçeleştirme bağlantısı açılır.
+            </div>
+
+            <div class="hepon-checkbox-wrap">
+              <input
+                id="heponFinalApproval"
+                name="final_approval"
+                type="checkbox"
+              >
+
+              <label for="heponFinalApproval">
+                Teklif bilgilerini kontrol ettim ve sigorta şirketinin ödeme sayfasına yönlendirilmeyi kabul ediyorum.
+              </label>
+            </div>
+
+            <div
+              class="hepon-step-status"
+              id="heponFinalStatus"
+              role="status"
+              aria-live="polite"
+            ></div>
+
+            <div class="hepon-quote-actions">
+              <button
+                type="button"
+                class="hepon-button hepon-button-secondary"
+                id="heponBackToOffers"
+              >
+                Tekliflere Dön
+              </button>
+
+              <div class="hepon-action-right">
+                <button
+                  type="button"
+                  class="hepon-button hepon-company-payment-button"
+                  id="heponGoToCompanyPayment"
+                >
+                  Sigorta Şirketinde Devam Et
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M9 5L16 12L9 19"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </form>
+    </div>
+  </div>
+</div>
+
