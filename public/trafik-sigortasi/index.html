@@ -177,7 +177,23 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 				object-fit: contain;
 			}
 		</style>
-		</head>
+		<style id="hepon-menu-yedek">
+.e-n-menu-item{position:relative}
+.e-n-menu-item:hover > .e-con,
+.e-n-menu-item:focus-within > .e-con{
+  display:flex !important;
+  position:absolute; top:100%; left:50%; transform:translateX(-50%);
+  z-index:99999; background:#fff;
+  min-width:min(920px,94vw); max-width:96vw;
+  box-shadow:0 30px 70px rgba(11,18,32,.22);
+  border-radius:0 0 18px 18px; overflow:hidden;
+}
+@media (max-width:1024px){
+  .e-n-menu-item:hover > .e-con,
+  .e-n-menu-item:focus-within > .e-con{position:static;transform:none;min-width:0;box-shadow:none}
+}
+</style>
+</head>
 <body class="wp-singular page-template page-template-elementor_header_footer page page-id-987880 wp-custom-logo wp-embed-responsive wp-theme-aifusionx full header-layout-logo-menu has-page-header no-middle-header responsive-layout vamtam-is-elementor elementor-active elementor-pro-active vamtam-wc-cart-empty wc-product-gallery-slider-active vamtam-font-smoothing layout-full elementor-default elementor-template-full-width elementor-kit-4 elementor-page elementor-page-987880">
 	<div id="top"></div>
 	

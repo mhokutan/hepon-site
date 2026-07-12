@@ -89,6 +89,25 @@ FOOTER_TABLO = [
     ('Cookie Policy', 'Çerez Politikası', None),
 ]
 
+# Elementor'un menu JS'i calismasa bile acilir menuyu calistiran saf CSS yedegi.
+# JS calisirsa paneli DOM'da tasidigi icin bu kurallar devreye girmez, cakismaz.
+MENU_YEDEK_CSS = '''<style id="hepon-menu-yedek">
+.e-n-menu-item{position:relative}
+.e-n-menu-item:hover > .e-con,
+.e-n-menu-item:focus-within > .e-con{
+  display:flex !important;
+  position:absolute; top:100%; left:50%; transform:translateX(-50%);
+  z-index:99999; background:#fff;
+  min-width:min(920px,94vw); max-width:96vw;
+  box-shadow:0 30px 70px rgba(11,18,32,.22);
+  border-radius:0 0 18px 18px; overflow:hidden;
+}
+@media (max-width:1024px){
+  .e-n-menu-item:hover > .e-con,
+  .e-n-menu-item:focus-within > .e-con{position:static;transform:none;min-width:0;box-shadow:none}
+}
+</style>'''
+
 def etiketle_degistir(blok, tablo):
     for eski, yeni, href in tablo:
         yer = 0
@@ -305,6 +324,10 @@ def calistir(indirme=True):
         # yonetim paneli arama motorlarina kapali kalsin
         if slug == 'yonetim':
             src = src.replace('</title>', '</title>\n<meta name="robots" content="noindex, nofollow">', 1)
+
+        # menu yedek CSS'i her sayfada
+        if '</head>' in src:
+            src = src.replace('</head>', MENU_YEDEK_CSS + '\n</head>', 1)
 
         hedef = os.path.join(PUB, yerel, 'index.html') if yerel else os.path.join(PUB, 'index.html')
         os.makedirs(os.path.dirname(hedef), exist_ok=True)
