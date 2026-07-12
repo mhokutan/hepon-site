@@ -43,6 +43,10 @@
   const api = (yol, secenek = {}) => fetch("/api/admin" + yol, {
     ...secenek, headers: { "x-admin": token, ...(secenek.headers || {}) },
   }).then((r) => r.json());
+  // tam yol isteyen uclar icin (orn. /api/cms/*)
+  const api2 = (yol, secenek = {}) => fetch(yol, {
+    ...secenek, headers: { "x-admin": token, ...(secenek.headers || {}) },
+  }).then((r) => r.json());
 
   async function girisDene() {
     const hata = document.getElementById("icHata");
@@ -149,23 +153,85 @@
       medyaListesiCiz();
     }
 
-    // Sayfa editoru: gercek duzenleme artik Canli Site Editorunde
-    const gorselSekme = document.querySelector('[data-se-view="visual"]');
-    if (gorselSekme && !gorselSekme.querySelector(".ic-editor-link")) {
-      gorselSekme.insertAdjacentHTML("afterbegin",
-        '<div class="ic-not ic-editor-link" style="background:#E4F7EF;color:#0E6B4F">' +
-        '<b>Canlı Site Editörü hazır:</b> gerçek sayfada tıkla-düzenle, taslak kaydet, yayınla. ' +
-        '<a href="/icerik/editor/" style="font-weight:700">Editörü aç →</a></div>');
+    // Sayfa editoru / Menuler / Footer: gercek duzenleme Canli Site Editorunde.
+    // Prototip formlar kaldirilip calisan kisayollara donusturulur.
+    const kisayol = (baslik, aciklama) => `
+      <article class="se-card"><div class="se-card-head"><b>${baslik}</b><span>${aciklama}</span></div>
+        <div class="se-inspector" style="padding:16px">
+          <p style="font-size:13px;color:#6F7E90;margin:0 0 12px">Sayfayı seç, editörde aç; öğeye tıkla → metni, bağlantıyı, rengi veya görseli değiştir → <b>Taslak kaydet</b> → <b>Yayınla</b>.</p>
+          <div class="se-field"><label>SAYFA</label><select class="ic-sayfa-sec">${SAYFALAR.map(([ad, yol]) => `<option value="${yol}">${ad}</option>`).join("")}</select></div>
+          <button class="se-btn primary ic-editor-ac" style="margin-top:10px">Canlı Editörde Aç →</button>
+        </div></article>`;
+
+    [["visual", "Sayfa içeriği", "Başlık, açıklama, buton metni/rengi, görseller"],
+     ["menus", "Menü düzenleme", "Menü öğesine editörde tıkla; metin/bağlantı değişikliği tüm sayfalara uygulanır"],
+     ["footer", "Footer düzenleme", "Footer öğesine editörde tıkla; değişiklik tüm sayfalara uygulanır"]].forEach(([k, b, a]) => {
+      const v = document.querySelector(`[data-se-view="${k}"]`);
+      if (v) v.innerHTML = kisayol(b, a);
+    });
+    document.querySelectorAll(".ic-editor-ac").forEach((b) => {
+      b.addEventListener("click", () => {
+        const sec = b.closest(".se-inspector").querySelector(".ic-sayfa-sec");
+        window.open("/icerik/editor/#" + encodeURIComponent(sec.value), "_blank");
+      });
+    });
+
+    // SEO bolumu: gercek kayit (per sayfa __seo__ kaydi, kaydet = taslak + yayin)
+    const seo = document.querySelector('[data-se-view="seo"]');
+    if (seo) {
+      seo.innerHTML = `
+        <article class="se-card"><div class="se-card-head"><b>SEO ayarları</b><span>Sayfa başlığı ve açıklaması (kaydedince yayına girer)</span></div>
+          <div class="se-inspector" style="padding:16px">
+            <div class="se-field"><label>SAYFA</label><select id="icSeoSayfa">${SAYFALAR.map(([ad, yol]) => `<option value="${yol}">${ad}</option>`).join("")}</select></div>
+            <div class="se-field"><label>SEO TITLE</label><input id="icSeoTitle" placeholder="Örn. Heponla | Sigorta Tekliflerini Karşılaştır"></div>
+            <div class="se-field"><label>META DESCRIPTION</label><textarea id="icSeoDesc" rows="3" placeholder="Arama sonuçlarında görünecek açıklama"></textarea></div>
+            <button class="se-btn primary" id="icSeoKaydet" style="margin-top:10px">Kaydet ve yayınla</button>
+            <span id="icSeoDurum" style="margin-left:10px;font-size:12.5px;color:#1DB586"></span>
+          </div></article>`;
+      document.getElementById("icSeoKaydet").addEventListener("click", async () => {
+        const sayfa = document.getElementById("icSeoSayfa").value;
+        const cevap = await api2("/api/cms/drafts", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ page: sayfa, changes: [{ selector: "__seo__", tag: "SEO",
+            style: { title: document.getElementById("icSeoTitle").value, description: document.getElementById("icSeoDesc").value } }] }),
+        });
+        if (cevap && cevap.ok) await api2("/api/cms/publish", {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ page: sayfa }) });
+        document.getElementById("icSeoDurum").textContent = (cevap && cevap.ok) ? "✓ Yayında" : "Kaydedilemedi";
+        setTimeout(() => { document.getElementById("icSeoDurum").textContent = ""; }, 2500);
+      });
     }
 
-    // Henuz baglanmamis prototip bolumlerine durum notu
-    [["menus"], ["footer"], ["seo"], ["versions"]].forEach(([k]) => {
-      const v = document.querySelector(`[data-se-view="${k}"]`);
-      if (v && !v.querySelector(".ic-not")) {
-        v.insertAdjacentHTML("afterbegin",
-          '<div class="ic-not">Bu bölüm şu an tasarım önizlemesi — kaydetme uçları backend yol haritasında. Metin/görsel/bağlantı değişiklikleri için <a href="/icerik/editor/">Canlı Site Editörü</a> kullanılabilir.</div>');
-      }
-    });
+    // Taslaklar: gercek CMS kayit listesi + geri alma + tumunu yayinla
+    const surumler = document.querySelector('[data-se-view="versions"]');
+    if (surumler) {
+      surumler.innerHTML = `
+        <article class="se-card"><div class="se-card-head"><b>Değişiklik kayıtları</b><span>Editörden yapılan tüm düzenlemeler</span></div>
+          <div style="padding:16px">
+            <button class="se-btn primary" id="icTumYayinla">Bekleyen taslakların tümünü yayınla</button>
+            <div class="ic-liste" id="icCmsListe" style="margin-top:12px"></div>
+          </div></article>`;
+      const cmsListe = async () => {
+        const liste = await api2("/api/cms/liste");
+        const kap = document.getElementById("icCmsListe");
+        if (!kap || !Array.isArray(liste)) return;
+        kap.innerHTML = liste.map((k) => `
+          <div>✏️ <div>${esc(k.sayfa)} · ${esc(k.secici.slice(0, 55))}
+            <span>${k.yayin_var ? "yayında" : "taslak"}${k.bekleyen ? " · bekleyen değişiklik var" : ""} · ${tarih(k.updated_at)}</span></div>
+            <button data-cms-sil="${k.id}">Geri al</button></div>`).join("") || "<div>Henüz değişiklik yok.</div>";
+        kap.onclick = async (e) => {
+          const b = e.target.closest("[data-cms-sil]");
+          if (!b) return;
+          await api2("/api/cms/" + b.dataset.cmsSil, { method: "DELETE" });
+          cmsListe();
+        };
+      };
+      document.getElementById("icTumYayinla").addEventListener("click", async () => {
+        await api2("/api/cms/publish", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+        cmsListe();
+      });
+      cmsListe();
+    }
   }
 
   if (token) {
