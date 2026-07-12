@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Site Editörü | Heponla Yönetim</title>
+<link rel="stylesheet" href="../../assets/css/site-editor.css">
+</head>
+<body>
+<main id="heponLiveEditor"><div class="le-app"><header class="le-top"><div class="le-brand"><span>h</span>heponla</div><select id="lePage" class="le-page" aria-label="Düzenlenecek sayfa"><option value="/">Ana Sayfa</option><option value="/hakkimizda/">Hakkımızda</option><option value="/trafik-sigortasi/">Trafik Sigortası</option><option value="/kasko-sigortasi/">Kasko Sigortası</option><option value="/imm-sigortasi/">İMM Sigortası</option><option value="/dask-sigortasi/">DASK Sigortası</option><option value="/seyahat-saglik-sigortasi/">Seyahat Sağlık</option><option value="/tamamlayici-saglik-sigortasi/">Tamamlayıcı Sağlık</option><option value="/yabanci-saglik-sigortasi/">Yabancı Sağlık</option><option value="/ferdi-kaza-sigortasi/">Ferdi Kaza</option><option value="/mesleki-sorumluluk-sigortalari/">Mesleki Sorumluluk</option><option value="/uyelik/">Üyelik</option><option value="/hesabim/">Hesabım</option><option value="/iletisim/">İletişim</option></select><div class="le-device"><button class="is-active" data-width="100%">Masaüstü</button><button data-width="768px">Tablet</button><button data-width="390px">Mobil</button></div><button class="le-action" id="leRefresh">↻ Yenile</button><button class="le-action primary" id="leSaveAll">Taslak kaydet</button></header><div class="le-layout"><section class="le-stage"><div class="le-loading" id="leLoading">Site yükleniyor…</div><div class="le-frame-wrap"><iframe id="leFrame" title="Canlı site önizlemesi" src="/"></iframe></div></section><aside class="le-inspector" id="leInspector"><div class="le-bar">Seçili alan <button id="leToggle">Düzenle</button></div><div class="le-inspector-head"><p>CANLI DÜZENLEME</p><h2 id="leSelectedName">Bir alan seçin</h2></div><div id="leEditorEmpty" class="le-empty"><i>⌁</i>Gerçek sayfadaki bir başlık, açıklama, görsel, buton, menü veya footer bağlantısına tıklayın.<br><br>Seçtiğiniz alan burada düzenlenir.</div><div id="leFields" class="le-fields" hidden><div class="le-field" id="leTextField"><label for="leText">METİN</label><textarea id="leText"></textarea></div><div class="le-field" id="leLinkField"><label for="leLink">BAĞLANTI</label><input id="leLink" type="text"></div><div class="le-field" id="leImageField" hidden><label for="leImage">GÖRSEL URL / MEDYA DOSYASI</label><input id="leImage" type="text" placeholder="https://..."><input id="leImageFile" type="file" accept="image/*" style="margin-top:8px;font-size:10px"></div><p class="le-meta" id="leMeta"></p><button class="le-save-element" id="leApply">Önizlemeye uygula</button><p class="le-tip">Bu işlem iframe içindeki gerçek sayfa önizlemesini anında günceller. “Taslak kaydet” veriyi yazılımcının API’sine gönderecek şekilde bağlanır.</p></div></aside></div></div></main>
+<script src="../../assets/js/site-editor.js" defer></script>
+<script src="../../assets/js/site-editor-api.js" defer></script>
+
+</body>
+</html>

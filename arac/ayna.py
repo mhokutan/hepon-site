@@ -361,8 +361,9 @@ def calistir(indirme=True):
         if '</head>' in src:
             src = src.replace('</head>', MENU_YEDEK_CSS + '\n</head>', 1)
 
-        # Gorsel Yoneticisi scripti her sayfada (takas + ?duzenle=1 modu)
-        src = src.replace('</body>', '<script src="/akis/gorsel.js" defer></script>\n</body>', 1)
+        # Gorsel Yoneticisi + Canli Site Editoru yayin uygulayicisi her sayfada
+        src = src.replace('</body>', '<script src="/akis/cms.js" defer></script>\n'
+                                     '<script src="/akis/gorsel.js" defer></script>\n</body>', 1)
 
         hedef = os.path.join(PUB, yerel, 'index.html') if yerel else os.path.join(PUB, 'index.html')
         os.makedirs(os.path.dirname(hedef), exist_ok=True)

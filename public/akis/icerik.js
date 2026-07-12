@@ -149,12 +149,21 @@
       medyaListesiCiz();
     }
 
-    // Prototip bolumlerine durum notu
-    [["visual", "Sayfa editörü"], ["menus", "Menüler"], ["footer", "Footer"], ["seo", "SEO"], ["versions", "Taslaklar"]].forEach(([k]) => {
+    // Sayfa editoru: gercek duzenleme artik Canli Site Editorunde
+    const gorselSekme = document.querySelector('[data-se-view="visual"]');
+    if (gorselSekme && !gorselSekme.querySelector(".ic-editor-link")) {
+      gorselSekme.insertAdjacentHTML("afterbegin",
+        '<div class="ic-not ic-editor-link" style="background:#E4F7EF;color:#0E6B4F">' +
+        '<b>Canlı Site Editörü hazır:</b> gerçek sayfada tıkla-düzenle, taslak kaydet, yayınla. ' +
+        '<a href="/icerik/editor/" style="font-weight:700">Editörü aç →</a></div>');
+    }
+
+    // Henuz baglanmamis prototip bolumlerine durum notu
+    [["menus"], ["footer"], ["seo"], ["versions"]].forEach(([k]) => {
       const v = document.querySelector(`[data-se-view="${k}"]`);
       if (v && !v.querySelector(".ic-not")) {
         v.insertAdjacentHTML("afterbegin",
-          '<div class="ic-not">Bu bölüm şu an tasarım önizlemesi — kaydetme uçları backend yol haritasında. Görsel değişiklikleri için "Medya ve görseller" bölümü canlı çalışıyor.</div>');
+          '<div class="ic-not">Bu bölüm şu an tasarım önizlemesi — kaydetme uçları backend yol haritasında. Metin/görsel/bağlantı değişiklikleri için <a href="/icerik/editor/">Canlı Site Editörü</a> kullanılabilir.</div>');
       }
     });
   }
