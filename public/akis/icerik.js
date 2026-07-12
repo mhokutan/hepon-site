@@ -76,6 +76,16 @@
     ["Üyelik", "/uyelik/"], ["Hesabım", "/hesabim/"],
   ];
 
+  async function havuzListesiCiz() {
+    const kap = document.getElementById("icHavuz");
+    if (!kap) return;
+    const liste = await api("/dosyalar");
+    if (!Array.isArray(liste)) return;
+    kap.innerHTML = "<b style='font-size:13px'>Yüklenen dosyalar</b>" + (liste.slice(0, 12).map((d) =>
+      `<div>📄 <div>${esc(d.ad)}<span>${(d.boyut / 1024).toFixed(0)} KB · ${tarih(d.tarih)}</span></div></div>`).join("") ||
+      "<div>Henüz dosya yok.</div>");
+  }
+
   async function medyaListesiCiz() {
     const kap = document.getElementById("icDegisenler");
     if (!kap) return;
@@ -110,9 +120,10 @@
         ata.insertAdjacentHTML("afterend",
           '<p style="font-size:12px;color:#6F7E90;margin-top:8px">Seçtiğin sayfa düzenleme modunda açılır; görselin üstündeki ✎ ile değiştir, anında yayına girer.</p>');
       }
-      // kutuphaneye dosya yukleme (gelen-dosyalar havuzuna)
+      // kutuphaneye dosya yukleme (eski /yukle/ paneli buraya tasindi; havuz: ~/gelen-dosyalar)
       const girdi = medya.querySelector("#seFile");
       if (girdi) {
+        girdi.removeAttribute("accept"); // tasarim teslimleri zip/json da olabilir
         girdi.addEventListener("change", async () => {
           const d = girdi.files[0];
           if (!d) return;
@@ -123,7 +134,14 @@
           if (adEl) adEl.textContent = cevap.ok ? `✓ Yüklendi: ${cevap.ad}` : (cevap.error || "Yükleme başarısız");
           const kutu = document.getElementById("seUploaded");
           if (kutu) kutu.style.display = "flex";
+          havuzListesiCiz();
         });
+      }
+      // havuzdaki dosyalar (tasarimci teslimleri)
+      const kutuphaneKart = medya.querySelector(".se-card");
+      if (kutuphaneKart) {
+        kutuphaneKart.insertAdjacentHTML("beforeend", '<div class="ic-liste" id="icHavuz"></div>');
+        havuzListesiCiz();
       }
       // degisen gorseller listesi
       const kart = medya.querySelector(".se-card");

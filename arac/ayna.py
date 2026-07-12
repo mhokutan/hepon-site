@@ -352,6 +352,10 @@ def calistir(indirme=True):
         # yonetici panelleri arama motorlarina kapali kalsin
         if slug in ('yonetim', 'icerik'):
             src = src.replace('</title>', '</title>\n<meta name="robots" content="noindex, nofollow">', 1)
+        # rol ayrimi: icerik paneli yonetim paneline baglanmaz (frontend / sirket yonetimi ayri)
+        if slug == 'icerik':
+            src = src.replace('<a class="se-back" href="/yonetim/">← Yönetim paneline dön</a>',
+                              '<a class="se-back" href="/">← Siteye dön</a>')
 
         # menu yedek CSS'i her sayfada
         if '</head>' in src:
