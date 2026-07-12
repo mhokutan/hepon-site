@@ -9,14 +9,21 @@ html { scroll-behavior: smooth; }
 body { background: var(--zemin); color: var(--lacivert); line-height: 1.6; }
 .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
 
-.topbar { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--cizgi); }
-.topbar .wrap { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; }
-.topbar img { height: 46px; }
+.topbar { position: sticky; top: 0; z-index: 50; background: #fff; border-bottom: 1px solid var(--cizgi); }
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; }
+.topbar img { height: 40px; display: block; }
 .topbar nav { display: flex; align-items: center; gap: 4px; }
-.topbar nav a { color: var(--lacivert); text-decoration: none; font-weight: 600; font-size: 14.5px; padding: 8px 12px; border-radius: 8px; transition: background .15s; }
-.topbar nav a:hover { background: var(--zemin); }
-.topbar nav a.cta { background: var(--turkuaz); color: #fff; margin-left: 8px; box-shadow: 0 4px 14px rgba(14,165,177,.35); }
-.topbar nav a.cta:hover { background: var(--turkuaz-koyu); }
+.topbar nav a { color: #111827; text-decoration: none; font-weight: 600; font-size: 14.5px; padding: 8px 12px; border-radius: 999px; transition: background .15s, color .15s; }
+.topbar nav a:hover { background: var(--zemin); color: var(--turkuaz-koyu); }
+.topbar nav a.cta { background: var(--turkuaz); color: #fff; margin-left: 8px; box-shadow: 0 4px 14px rgba(48,182,228,.35); }
+.topbar nav a.cta:hover { background: var(--turkuaz-koyu); color: #fff; }
+
+/* Sigorta Urunleri acilir menusu (temadaki mega menunun sade karsiligi) */
+.menu-acilir { position: relative; }
+.menu-acilir .ok { font-size: 11px; opacity: .6; }
+.menu-acilir .menu-panel { position: absolute; top: 100%; left: 0; min-width: 270px; background: #fff; border: 1px solid var(--cizgi); border-radius: 16px; box-shadow: var(--golge); padding: 10px; display: none; }
+.menu-acilir:hover .menu-panel, .menu-acilir:focus-within .menu-panel { display: block; }
+.menu-acilir .menu-panel a { display: block; border-radius: 10px; padding: 9px 12px; font-size: 14px; }
 
 .hero { background: radial-gradient(1100px 500px at 75% -10%, #24406e 0%, var(--lacivert) 55%, var(--lacivert-koyu) 100%); color: #fff; padding: 72px 0 84px; overflow: hidden; }
 .hero .wrap { display: grid; grid-template-columns: 1.2fr .8fr; align-items: center; gap: 32px; }
@@ -88,11 +95,12 @@ body { background: var(--zemin); color: var(--lacivert); line-height: 1.6; }
 .sss-madde .cevap { padding: 0 20px 18px; color: var(--gri); font-size: 14.5px; }
 
 .demo-etiket { background: var(--turkuaz); color: #fff; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; padding: 4px 10px; border-radius: 999px; }
-footer { background: var(--lacivert-koyu); color: #b9c6dd; margin-top: 64px; padding: 48px 0 28px; }
-footer .wrap { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; }
-footer img { height: 44px; margin-bottom: 14px; }
-footer h4 { color: #fff; font-size: 14px; margin-bottom: 12px; letter-spacing: .04em; }
-footer a { color: #b9c6dd; text-decoration: none; display: block; font-size: 14px; margin-bottom: 8px; }
+/* Footer, yeni temayla ayni: siyah zemin, acik gri metin */
+footer { background: #000; color: #9aa4b2; margin-top: 64px; padding: 56px 0 28px; }
+footer .wrap { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.1fr; gap: 32px; }
+footer img { height: 40px; margin-bottom: 14px; }
+footer h4 { color: #fff; font-size: 13px; margin-bottom: 12px; letter-spacing: .08em; }
+footer a { color: #9aa4b2; text-decoration: none; display: block; font-size: 14px; margin-bottom: 8px; }
 footer a:hover { color: var(--turkuaz); }
 footer .telif { grid-column: 1 / -1; border-top: 1px solid rgba(255,255,255,.12); margin-top: 24px; padding-top: 20px; font-size: 12.5px; text-align: center; }
 
