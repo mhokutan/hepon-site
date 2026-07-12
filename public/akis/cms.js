@@ -44,20 +44,25 @@
 
   if (!liste.length) return;
 
-  function bul(secici) {
+  // Ayni secici birden fazla kopyada olabilir (orn. sabit header klonu) -
+  // TUM eslesmeler doner ki menu/footer degisiklikleri her kopyada gorunsun.
+  function tumunuBul(secici) {
     if (secici.startsWith("data-hepon-edit: ")) {
-      return document.querySelector('[data-hepon-edit="' + secici.slice(17) + '"]');
+      return [...document.querySelectorAll('[data-hepon-edit="' + secici.slice(17) + '"]')];
     }
     // kararli bicim: [data-id="x"] tag@n
     const m = secici.match(/^(\[data-id="[^"]+"\])\s+([a-z0-9]+)@(\d+)$/);
     if (m) {
-      const kap = document.querySelector(m[1]);
-      if (!kap) return null;
-      return [...kap.querySelectorAll(m[2])][Number(m[3])] || null;
+      const sonuc = [];
+      document.querySelectorAll(m[1]).forEach((kap) => {
+        const el = [...kap.querySelectorAll(m[2])][Number(m[3])];
+        if (el) sonuc.push(el);
+      });
+      return sonuc;
     }
-    // dogrudan kap secimi: [data-id="x"]
-    try { return document.querySelector(secici); } catch (e) { return null; }
+    try { return [...document.querySelectorAll(secici)]; } catch (e) { return []; }
   }
+  const bul = (secici) => tumunuBul(secici)[0] || null;
 
   // anahtar veya seciciyle hedef bul (aksiyonlar icin bilesen koku tercih edilir)
   function kokBul(secici) {
@@ -101,18 +106,18 @@
       continue;
     }
 
-    const el = bul(d.secici);
-    if (!el) continue;
-    if (d.etiket === "IMG") {
-      if (d.yayin.src) { el.removeAttribute("srcset"); el.src = d.yayin.src; }
-    } else {
-      if (d.yayin.text != null && d.yayin.text !== "") el.textContent = d.yayin.text;
-      if (d.etiket === "A" && d.yayin.href) el.setAttribute("href", d.yayin.href);
-    }
-    // stil degisiklikleri (buton rengi, arka plan rengi/gorseli vb.)
-    if (d.yayin.style && typeof d.yayin.style === "object") {
-      for (const [ozellik, deger] of Object.entries(d.yayin.style)) {
-        if (deger) el.style.setProperty(ozellik, String(deger), "important");
+    for (const el of tumunuBul(d.secici)) {
+      if (d.etiket === "IMG") {
+        if (d.yayin.src) { el.removeAttribute("srcset"); el.src = d.yayin.src; }
+      } else {
+        if (d.yayin.text != null && d.yayin.text !== "") el.textContent = d.yayin.text;
+        if (d.etiket === "A" && d.yayin.href) el.setAttribute("href", d.yayin.href);
+      }
+      // stil degisiklikleri (buton rengi, arka plan rengi/gorseli vb.)
+      if (d.yayin.style && typeof d.yayin.style === "object") {
+        for (const [ozellik, deger] of Object.entries(d.yayin.style)) {
+          if (deger) el.style.setProperty(ozellik, String(deger), "important");
+        }
       }
     }
   }

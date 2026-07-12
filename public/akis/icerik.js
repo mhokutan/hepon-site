@@ -153,27 +153,146 @@
       medyaListesiCiz();
     }
 
-    // Sayfa editoru / Menuler / Footer: gercek duzenleme Canli Site Editorunde.
-    // Prototip formlar kaldirilip calisan kisayollara donusturulur.
-    const kisayol = (baslik, aciklama) => `
-      <article class="se-card"><div class="se-card-head"><b>${baslik}</b><span>${aciklama}</span></div>
-        <div class="se-inspector" style="padding:16px">
-          <p style="font-size:13px;color:#6F7E90;margin:0 0 12px">Sayfayı seç, editörde aç; öğeye tıkla → metni, bağlantıyı, rengi veya görseli değiştir → <b>Taslak kaydet</b> → <b>Yayınla</b>.</p>
-          <div class="se-field"><label>SAYFA</label><select class="ic-sayfa-sec">${SAYFALAR.map(([ad, yol]) => `<option value="${yol}">${ad}</option>`).join("")}</select></div>
-          <button class="se-btn primary ic-editor-ac" style="margin-top:10px">Canlı Editörde Aç →</button>
-        </div></article>`;
-
-    [["visual", "Sayfa içeriği", "Başlık, açıklama, buton metni/rengi, görseller"],
-     ["menus", "Menü düzenleme", "Menü öğesine editörde tıkla; metin/bağlantı değişikliği tüm sayfalara uygulanır"],
-     ["footer", "Footer düzenleme", "Footer öğesine editörde tıkla; değişiklik tüm sayfalara uygulanır"]].forEach(([k, b, a]) => {
-      const v = document.querySelector(`[data-se-view="${k}"]`);
-      if (v) v.innerHTML = kisayol(b, a);
-    });
-    document.querySelectorAll(".ic-editor-ac").forEach((b) => {
-      b.addEventListener("click", () => {
-        const sec = b.closest(".se-inspector").querySelector(".ic-sayfa-sec");
-        window.open("/icerik/editor/#" + encodeURIComponent(sec.value), "_blank");
+    // Sayfa editoru: gercek duzenleme Canli Site Editorunde (kisayol)
+    const gorselV = document.querySelector('[data-se-view="visual"]');
+    if (gorselV) {
+      gorselV.innerHTML = `
+        <article class="se-card"><div class="se-card-head"><b>Sayfa içeriği</b><span>Başlık, açıklama, buton metni/rengi, görseller — gerçek sayfada tıkla-düzenle</span></div>
+          <div class="se-inspector" style="padding:16px">
+            <div class="se-field"><label>SAYFA</label><select class="ic-sayfa-sec">${SAYFALAR.map(([ad, yol]) => `<option value="${yol}">${ad}</option>`).join("")}</select></div>
+            <button class="se-btn primary ic-editor-ac" style="margin-top:10px">Canlı Editörde Aç →</button>
+          </div></article>`;
+      gorselV.querySelector(".ic-editor-ac").addEventListener("click", () => {
+        window.open("/icerik/editor/#" + encodeURIComponent(gorselV.querySelector(".ic-sayfa-sec").value), "_blank");
       });
+    }
+
+    // ---- MENU ve FOOTER: sitedeki gercek ogeleri panelde dogrudan duzenle ----
+    // Ana sayfanin HTML'i cozumlenir; her oge icin kararli (data-id tabanli)
+    // secici uretilir; kaydet -> '*' sayfasina CMS kaydi -> tum sitede gecerli.
+    const seciciUret = (el) => {
+      const t = el.tagName.toLowerCase();
+      const w = el.closest("[data-id]");
+      if (!w) return null;
+      const ayni = [...w.querySelectorAll(t)];
+      const n = ayni.indexOf(el);
+      return `[data-id="${w.getAttribute("data-id")}"] ${t}@${n < 0 ? 0 : n}`;
+    };
+
+    async function siteyiCozumle() {
+      const html = await fetch("/", { cache: "no-store" }).then((r) => r.text());
+      return new DOMParser().parseFromString(html, "text/html");
+    }
+
+    function duzenleyiciKur(gorunum, baslik, aciklama, satirlar, kaydetVeYayinla) {
+      const v = document.querySelector(`[data-se-view="${gorunum}"]`);
+      if (!v) return;
+      v.innerHTML = `
+        <article class="se-card"><div class="se-card-head"><b>${baslik}</b><span>${aciklama}</span></div>
+          <div style="padding:16px">
+            ${satirlar.map((s, i) => `
+              <div class="se-field" style="margin-bottom:12px"><label>${esc(s.etiket)}</label>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <input data-satir="${i}" data-alan="metin" value="${esc(s.metin)}" style="flex:2;min-width:180px">
+                  ${s.href != null ? `<input data-satir="${i}" data-alan="href" value="${esc(s.href)}" style="flex:1;min-width:140px" placeholder="bağlantı">` : ""}
+                </div></div>`).join("")}
+            <button class="se-btn primary" data-kaydet style="margin-top:6px">Kaydet ve yayınla</button>
+            <span data-durum style="margin-left:10px;font-size:12.5px;color:#1DB586"></span>
+            <p style="font-size:12px;color:#6F7E90;margin-top:10px">Değişiklikler tüm sayfalara uygulanır. Görsel/renk düzenlemeleri için <a href="/icerik/editor/" target="_blank">Canlı Editörü</a> kullanabilirsin.</p>
+          </div></article>`;
+      v.querySelector("[data-kaydet]").addEventListener("click", async () => {
+        const durum = v.querySelector("[data-durum]");
+        durum.textContent = "Kaydediliyor…";
+        const degisiklikler = [];
+        satirlar.forEach((s, i) => {
+          const metin = v.querySelector(`[data-satir="${i}"][data-alan="metin"]`).value.trim();
+          const hrefEl = v.querySelector(`[data-satir="${i}"][data-alan="href"]`);
+          if (metin && metin !== s.metin) {
+            degisiklikler.push({ selector: s.metinSecici, tag: s.metinTag, text: metin, href: null, src: null });
+          }
+          if (hrefEl && s.hrefSecici && hrefEl.value.trim() && hrefEl.value.trim() !== s.href) {
+            degisiklikler.push({ selector: s.hrefSecici, tag: "A", text: null, href: hrefEl.value.trim(), src: null });
+          }
+        });
+        if (!degisiklikler.length) { durum.textContent = "Değişiklik yok"; return; }
+        const sonuc = await kaydetVeYayinla(degisiklikler);
+        durum.textContent = sonuc ? `✓ ${degisiklikler.length} değişiklik yayında` : "Kaydedilemedi";
+        setTimeout(() => { durum.textContent = ""; }, 3000);
+      });
+    }
+
+    async function yayinla(degisiklikler) {
+      const cevap = await api2("/api/cms/publish", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ page: "*", changes: degisiklikler }),
+      });
+      return cevap && cevap.ok;
+    }
+
+    siteyiCozumle().then((doc) => {
+      const header = doc.querySelector("header");
+      const footer = doc.querySelector("footer");
+
+      // MENU satirlari: ust menu basliklari + urun menusu + Uye Ol butonu
+      const menuSatirlari = [];
+      if (header) {
+        header.querySelectorAll(".e-n-menu-title-text").forEach((span) => {
+          const metin = span.textContent.trim();
+          if (!metin || menuSatirlari.some((s) => s.metin === metin && s.tur === "ust")) return;
+          const a = span.closest("a");
+          menuSatirlari.push({
+            tur: "ust", etiket: "ÜST MENÜ: " + metin, metin,
+            metinSecici: seciciUret(span), metinTag: "SPAN",
+            href: a ? a.getAttribute("href") : null,
+            hrefSecici: a ? seciciUret(a) : null,
+          });
+        });
+        header.querySelectorAll(".elementor-icon-box-title a").forEach((a) => {
+          const metin = a.textContent.trim();
+          if (!metin || menuSatirlari.some((s) => s.metin === metin)) return;
+          menuSatirlari.push({
+            tur: "urun", etiket: "ÜRÜN MENÜSÜ: " + metin, metin,
+            metinSecici: seciciUret(a), metinTag: "A",
+            href: a.getAttribute("href"), hrefSecici: seciciUret(a),
+          });
+        });
+        const uyeol = [...header.querySelectorAll(".elementor-button-text")]
+          .find((s) => s.textContent.includes("Üye"));
+        if (uyeol) {
+          const a = uyeol.closest("a");
+          menuSatirlari.push({
+            tur: "buton", etiket: "BUTON: Üye Ol/Giriş Yap", metin: uyeol.textContent.trim(),
+            metinSecici: seciciUret(uyeol), metinTag: "SPAN",
+            href: a ? a.getAttribute("href") : null,
+            hrefSecici: a ? seciciUret(a) : null,
+          });
+        }
+      }
+      duzenleyiciKur("menus", "Menü düzenleme",
+        "Üst menü, ürün menüsü ve üyelik butonu — metin ve bağlantılar", menuSatirlari, yayinla);
+
+      // FOOTER satirlari: telefon, e-posta ve metin bloklari
+      const footerSatirlari = [];
+      if (footer) {
+        footer.querySelectorAll('a[href^="tel:"]').forEach((a) => {
+          footerSatirlari.push({ etiket: "TELEFON", metin: a.textContent.trim(),
+            metinSecici: seciciUret(a), metinTag: "A",
+            href: a.getAttribute("href"), hrefSecici: seciciUret(a) });
+        });
+        footer.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
+          footerSatirlari.push({ etiket: "E-POSTA", metin: a.textContent.trim(),
+            metinSecici: seciciUret(a), metinTag: "A",
+            href: a.getAttribute("href"), hrefSecici: seciciUret(a) });
+        });
+        [...footer.querySelectorAll("p")].slice(0, 4).forEach((p, i) => {
+          const metin = p.textContent.trim();
+          if (!metin || metin.length > 220) return;
+          footerSatirlari.push({ etiket: "METİN " + (i + 1), metin,
+            metinSecici: seciciUret(p), metinTag: "P", href: null, hrefSecici: null });
+        });
+      }
+      duzenleyiciKur("footer", "Footer düzenleme",
+        "İletişim bilgileri ve footer metinleri — tüm sayfalarda geçerli", footerSatirlari, yayinla);
     });
 
     // SEO bolumu: gercek kayit (per sayfa __seo__ kaydi, kaydet = taslak + yayin)
