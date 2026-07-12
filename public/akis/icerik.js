@@ -245,17 +245,17 @@
     };
     const FOOTER_TEMALARI = {
       "Siyah (varsayılan)": [
-        stilKaydi("footer, footer .vamtam-has-theme-cp", { "background-color": "#000000" }),
+        stilKaydi("footer .vamtam-has-theme-cp", { "background-color": "#000000" }),
         stilKaydi("footer p, footer li, footer span, footer a", { color: "#9aa4b2" }),
         stilKaydi("footer h2, footer h3, footer h6", { color: "#ffffff" }),
       ],
       "Lacivert": [
-        stilKaydi("footer, footer .vamtam-has-theme-cp", { "background-color": "#13263D" }),
+        stilKaydi("footer .vamtam-has-theme-cp", { "background-color": "#13263D" }),
         stilKaydi("footer p, footer li, footer span, footer a", { color: "#B9C6DD" }),
         stilKaydi("footer h2, footer h3, footer h6", { color: "#ffffff" }),
       ],
       "Açık": [
-        stilKaydi("footer, footer .vamtam-has-theme-cp", { "background-color": "#FAF9F7" }),
+        stilKaydi("footer .vamtam-has-theme-cp", { "background-color": "#FAF9F7" }),
         stilKaydi("footer p, footer li, footer span, footer a", { color: "#4A5568" }),
         stilKaydi("footer h2, footer h3, footer h6", { color: "#13263D" }),
       ],
@@ -373,7 +373,7 @@
       tasarimKarti("footer", "Footer tasarımı", FOOTER_TEMALARI, {
         zemin: "#000000", metin: "#9aa4b2",
         kayitlar: (zemin, metin) => [
-          stilKaydi("footer, footer .vamtam-has-theme-cp", { "background-color": zemin }),
+          stilKaydi("footer .vamtam-has-theme-cp", { "background-color": zemin }),
           stilKaydi("footer p, footer li, footer span, footer a", { color: metin }),
         ],
       });
