@@ -98,9 +98,56 @@
     rozetAyarla("campaigns", liste.filter((k) => k.active).length);
   }
 
+  function gorselSekmesiKur() {
+    if (document.querySelector('[data-admin-tab="gorseller"]')) return;
+    const nav = document.querySelector(".adm-nav");
+    const govde = document.querySelector('[data-admin-view="settings"]');
+    if (!nav || !govde) return;
+    const btn = document.createElement("button");
+    btn.setAttribute("data-admin-tab", "gorseller");
+    btn.innerHTML = '<i class="adm-dot">▦</i>Görseller';
+    nav.appendChild(btn);
+    const goruntu = document.createElement("div");
+    goruntu.className = "adm-view";
+    goruntu.setAttribute("data-admin-view", "gorseller");
+    goruntu.innerHTML = '<article class="adm-card"><h2 style="margin-top:0">Görseller</h2>' +
+      '<p style="color:#6F7E90;font-size:13.5px">Sitedeki bir görseli değiştirmek için ilgili sayfayı ' +
+      'adresin sonuna <b>?duzenle=1</b> ekleyerek aç (örn. <a href="/?duzenle=1" target="_blank">ana sayfa</a>); ' +
+      'görselin üzerindeki ✎ düğmesiyle yenisini yükle. Aşağıda yapılmış değişiklikler listelenir.</p>' +
+      '<div id="ypGorselListe"></div></article>';
+    govde.parentElement.appendChild(goruntu);
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("[data-admin-view]").forEach((v) => v.classList.remove("is-active"));
+      document.querySelectorAll("[data-admin-tab]").forEach((b) => b.classList.remove("is-active"));
+      goruntu.classList.add("is-active");
+      btn.classList.add("is-active");
+      gorselleriCiz();
+    });
+  }
+
+  async function gorselleriCiz() {
+    const liste = await api("/gorseller");
+    const kap = document.getElementById("ypGorselListe");
+    if (!kap || !Array.isArray(liste)) return;
+    kap.innerHTML = liste.map((g) => `
+      <div class="yp-kamp">
+        <img src="/gorseller/${esc(g.yeni_dosya)}" alt="" style="width:64px;height:44px;object-fit:cover;border-radius:8px">
+        <div style="flex:1"><b>${esc(g.eski_src.split("/").pop())}</b>
+          <span>Sayfa: ${esc(g.sayfa || "-")} · ${tarih(g.updated_at)}</span></div>
+        <button data-gorsel-id="${g.id}">İlk haline döndür</button>
+      </div>`).join("") || "<p>Henüz değiştirilmiş görsel yok.</p>";
+    kap.onclick = async (e) => {
+      const b = e.target.closest("[data-gorsel-id]");
+      if (!b) return;
+      await api("/gorseller/" + b.dataset.gorselId + "/geri-al", { method: "PATCH" });
+      gorselleriCiz();
+    };
+  }
+
   async function yukle() {
     const ozet = await api("/ozet");
     if (ozet.error) { sessionStorage.removeItem("hepon_admin"); document.body.appendChild(perde); return; }
+    gorselSekmesiKur();
 
     // kenar cubugu rozetleri
     rozetAyarla("customers", ozet.customerCount);
