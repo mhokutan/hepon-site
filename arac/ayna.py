@@ -148,7 +148,22 @@ def asset_indir(html_listesi):
         yeni_icerik = yeni_icerik.replace('https:\\/\\/1217253.eu14.myftpupload.com\\/wp-includes', '\\/wp\\/wp-includes')
         if yeni_icerik != icerik:
             open(f, 'w', encoding='utf-8').write(yeni_icerik)
-    print(f'  yeni indirilen asset: {yeni} (toplam referans: {len(urls)})')
+    # Elementor webpack runtime'larindaki tembel JS parcalari (mega menu vb.)
+    parca_sayisi = 0
+    for eklenti in ['elementor', 'elementor-pro']:
+        dizin = f'{PUB}/wp/wp-content/plugins/{eklenti}/assets/js'
+        if not os.path.isdir(dizin):
+            continue
+        for runtime in os.listdir(dizin):
+            if 'runtime' not in runtime:
+                continue
+            icerik = open(os.path.join(dizin, runtime), encoding='utf-8', errors='ignore').read()
+            for p in set(re.findall(r'"([a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-f0-9]{16,}\.bundle\.min\.js)"', icerik)):
+                hedef = os.path.join(dizin, p)
+                if not os.path.exists(hedef):
+                    if indir(f'{BASE}/wp-content/plugins/{eklenti}/assets/js/{p}', hedef):
+                        parca_sayisi += 1
+    print(f'  yeni indirilen asset: {yeni} + {parca_sayisi} JS parcasi (toplam referans: {len(urls)})')
 
 def bos_butonlari_bagla(src, cta):
     """'#' hedefli elementor butonlarini sayfa turune gore baglar."""
@@ -249,6 +264,9 @@ def calistir(indirme=True):
         src = src.replace(BASE + '/wp-content', '/wp/wp-content')
         src = src.replace(BASE + '/wp-includes', '/wp/wp-includes')
         src = re.sub(re.escape(BASE) + r'(/[^"\'\\ ]*)?', lambda m: sayfa_linki(m.group(1)), src)
+        # JSON config icindeki kacisli asset yollari (Elementor webpack publicPath buradan okur)
+        src = src.replace('https:\\/\\/1217253.eu14.myftpupload.com\\/wp-content', '\\/wp\\/wp-content')
+        src = src.replace('https:\\/\\/1217253.eu14.myftpupload.com\\/wp-includes', '\\/wp\\/wp-includes')
         src = src.replace('https:\\/\\/1217253.eu14.myftpupload.com', '')
         src = src.replace('1217253.eu14.myftpupload.com%20Managed%20WordPress%20Site', 'Hepon%20Sigorta')
         src = src.replace('1217253.eu14.myftpupload.com Managed WordPress Site', 'Hepon Sigorta')
