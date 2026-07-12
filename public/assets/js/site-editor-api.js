@@ -241,4 +241,85 @@ window.addEventListener("DOMContentLoaded", () => {
       if (el && son && el.closest("header, footer")) son.page = "*";
     };
   }
+
+  // ==================== KUTUPHANE ====================
+  // Marka fontlari (sitede yuklu), renk paleti ve buton stil on-tanimlari.
+  // Secimler style kaydi olarak kaydedilir; Taslak kaydet -> Yayinla ile kalici.
+  const FONTLAR = [
+    ["", "Yazı tipi seç…"],
+    ["'Instrument Sans', sans-serif", "Instrument Sans (marka)"],
+    ["'IBM Plex Sans', sans-serif", "IBM Plex Sans (marka)"],
+    ["Georgia, 'Times New Roman', serif", "Georgia (serif)"],
+    ["Arial, Helvetica, sans-serif", "Arial"],
+  ];
+  const PALET = ["#30B6E4", "#1883A8", "#1DB586", "#13263D", "#111827", "#FAF9F7", "#FFFFFF"];
+  const BUTON_STILLERI = [
+    ["Mavi dolgu", { "background-color": "#30B6E4", "color": "#ffffff", "border-radius": "999px", "border": "none" }],
+    ["Koyu", { "background-color": "#111827", "color": "#ffffff", "border-radius": "999px", "border": "none" }],
+    ["Yeşil", { "background-color": "#1DB586", "color": "#ffffff", "border-radius": "999px", "border": "none" }],
+    ["Çerçeveli", { "background-color": "transparent", "color": "#1883A8", "border": "2px solid #30B6E4", "border-radius": "999px" }],
+    ["Beyaz", { "background-color": "#ffffff", "color": "#13263D", "border": "1px solid #DFE8ED", "border-radius": "999px" }],
+  ];
+
+  const stilUygula = (el, stil, sayfaKapsami) => {
+    for (const [k, v] of Object.entries(stil)) el.style.setProperty(k, v, "important");
+    (window.heponlaLiveEditorChanges ||= []).push({
+      selector: el === el.ownerDocument.body ? "body" : seciciUret(el),
+      tag: el.tagName, text: null, href: null, src: null, style: stil,
+      page: sayfaKapsami || (el.closest("header, footer") ? "*" : (document.querySelector("#lePage")?.value || "/")),
+    });
+    status.textContent = "Kütüphane stili önizlemeye uygulandı; Taslak kaydet → Yayınla ile kalıcı olur.";
+  };
+
+  fields.insertAdjacentHTML("beforeend", `
+    <div class="le-field" style="border-top:1px solid #dfe9ee;padding-top:12px"><label>KÜTÜPHANE — YAZI TİPİ</label>
+      <select id="leFontSec" style="width:100%;padding:8px;border:1px solid #dfe9ee;border-radius:8px;font-family:inherit;font-size:12px">
+        ${FONTLAR.map(([v, ad]) => `<option value="${v}">${ad}</option>`).join("")}
+      </select>
+      <div style="display:flex;gap:6px;margin-top:7px">
+        <button id="leFontOge" type="button" style="flex:1;padding:7px;border:1px solid #dfe9ee;border-radius:8px;background:#fff;cursor:pointer;font-family:inherit;font-size:11px">Seçili öğeye</button>
+        <button id="leFontSayfa" type="button" style="flex:1;padding:7px;border:1px solid #dfe9ee;border-radius:8px;background:#fff;cursor:pointer;font-family:inherit;font-size:11px">Tüm siteye</button>
+      </div></div>
+    <div class="le-field"><label>KÜTÜPHANE — RENK PALETİ</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${PALET.map((r) => `<button type="button" data-palet="${r}" title="${r}" style="width:26px;height:26px;border-radius:8px;border:1px solid #dfe9ee;background:${r};cursor:pointer"></button>`).join("")}
+      </div>
+      <p style="font-size:10px;color:#708191;margin:5px 0 0">Tıkla: zemin rengi kutusuna kopyalanır (Shift+tıkla: metin rengi).</p></div>
+    <div class="le-field"><label>KÜTÜPHANE — BUTON STİLLERİ</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${BUTON_STILLERI.map(([ad, s], i) => `<button type="button" data-buton-stil="${i}" style="padding:7px 12px;font-size:11px;font-family:inherit;cursor:pointer;background:${s["background-color"]};color:${s.color};border:${s.border === "none" ? "1px solid transparent" : s.border};border-radius:999px">${ad}</button>`).join("")}
+      </div>
+      <p style="font-size:10px;color:#708191;margin:5px 0 0">Önce sayfadan butonu seç, sonra stile tıkla.</p></div>`);
+
+  document.getElementById("leFontOge").onclick = () => {
+    const font = document.getElementById("leFontSec").value;
+    const el = window.heponlaLiveEditorSelected;
+    if (!font) return (status.textContent = "Önce listeden yazı tipi seç.");
+    if (!el) return (status.textContent = "Önce sayfadan bir öğe seç.");
+    stilUygula(el, { "font-family": font });
+  };
+  document.getElementById("leFontSayfa").onclick = () => {
+    const font = document.getElementById("leFontSec").value;
+    if (!font) return (status.textContent = "Önce listeden yazı tipi seç.");
+    const gövde = document.querySelector("#leFrame")?.contentDocument?.body;
+    if (!gövde) return;
+    stilUygula(gövde, { "font-family": font }, "*");
+    status.textContent = "Yazı tipi tüm site için kuyruğa alındı; Taslak kaydet → Yayınla.";
+  };
+  document.querySelectorAll("[data-palet]").forEach((b) => {
+    b.addEventListener("click", (e) => {
+      const hedef = e.shiftKey ? "#leMetinRenk" : "#leZeminRenk";
+      const kutu = document.querySelector(hedef);
+      if (kutu) kutu.value = b.dataset.palet === "#FFFFFF" ? "#ffffff" : b.dataset.palet;
+      status.textContent = (e.shiftKey ? "Metin" : "Zemin") + " rengi seçildi: " + b.dataset.palet + " — 'Renkleri uygula' ile kullan.";
+    });
+  });
+  document.querySelectorAll("[data-buton-stil]").forEach((b) => {
+    b.addEventListener("click", () => {
+      const el = window.heponlaLiveEditorSelected;
+      if (!el) return (status.textContent = "Önce sayfadan bir buton seç.");
+      const hedefEl = el.closest("a, button") || el;
+      stilUygula(hedefEl, BUTON_STILLERI[Number(b.dataset.butonStil)][1]);
+    });
+  });
 });
