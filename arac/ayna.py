@@ -277,6 +277,49 @@ def anasayfa_kartlari(src):
                 src = src[:k + 4] + ' id="urunler"' + src[k + 4:]
     return src
 
+def anasayfa_etiketle(src):
+    """Ana sayfa urun kartlarina bilesen anahtarlari ekler (data-hepon-edit).
+    Sema: home.products.<kod>.title|description|image|cta + kart kokune
+    data-hepon-component. Editor ve cms.js bu anahtarlarla kararli calisir."""
+    def oznitelik_ekle(kaynak, poz, oznitelik):
+        # '<tag' den hemen sonra ekle
+        son = kaynak.find(' ', poz)
+        return kaynak[:son] + ' ' + oznitelik + kaynak[son:], len(oznitelik) + 1
+
+    for kod in KART_HEDEF:
+        anahtar = f'home.products.{kod}'
+        m = re.search(r'data-product="%s"' % kod, src)
+        if not m:
+            continue
+        poz = m.start()
+        # kart icindeki parcalari konumla (geriye dogru: h4 ve img; ileri: buton a)
+        h4 = src.rfind('<h4', 0, poz)
+        img = src.rfind('<img', 0, poz)
+        p = src.find('<p', h4, poz) if h4 > 0 else -1
+        a = src.find('<a', poz, poz + 3000)
+        kok = src.rfind('vamtam-has-theme-cp', 0, img if img > 0 else poz)
+        kok_div = src.rfind('<div', 0, kok) if kok > 0 else -1
+        # sondan basa dogru ekle ki konumlar kaymasin
+        parcalar = sorted([x for x in [
+            (a, f'data-hepon-edit="{anahtar}.cta"'),
+            (p, f'data-hepon-edit="{anahtar}.description"'),
+            (poz - 1, None),  # sinir isareti, islem yok
+            (h4, f'data-hepon-edit="{anahtar}.title"'),
+            (img, f'data-hepon-edit="{anahtar}.image"'),
+            (kok_div, f'data-hepon-component="{anahtar}"'),
+        ] if x[0] and x[0] > 0 and x[1]], reverse=True)
+        for konum, oznitelik in parcalar:
+            if f'{oznitelik}' in src:
+                continue
+            src, _f = oznitelik_ekle(src, konum, oznitelik)
+
+    # hero basligi
+    h1 = src.find('<h1')
+    if h1 > 0 and 'data-hepon-edit="home.hero.title"' not in src:
+        son = src.find(' ', h1)
+        src = src[:son] + ' data-hepon-edit="home.hero.title"' + src[son:]
+    return src
+
 def calistir(indirme=True):
     os.makedirs(KAYNAK_DIZIN, exist_ok=True)
     kaynaklar = {}
@@ -335,6 +378,8 @@ def calistir(indirme=True):
         # sayfa turune ozel baglama
         # urun kartlari iceren sayfalar (ana sayfa, hakkimizda vb.)
         if 'data-product="' in src and (not cta or cta[0] != 'modal'):
+            if slug == '':
+                src = anasayfa_etiketle(src)
             src = anasayfa_kartlari(src)
         src = bos_butonlari_bagla(src, cta if slug != '' else None)
         if cta:

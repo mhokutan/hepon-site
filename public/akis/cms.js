@@ -5,14 +5,43 @@
 (async () => {
   "use strict";
 
-  let liste = [];
+  let liste = [], bilesenler = [];
   try {
-    const [sayfa, genel] = await Promise.all([
+    const slug = location.pathname === "/" ? "home" : location.pathname.replace(/\//g, "");
+    const [sayfa, genel, sayfaVerisi] = await Promise.all([
       fetch("/api/cms/icerik?sayfa=" + encodeURIComponent(location.pathname)).then((r) => r.json()),
       fetch("/api/cms/icerik?sayfa=*").then((r) => r.json()),
+      fetch("/api/cms/pages/" + slug).then((r) => r.json()).catch(() => null),
     ]);
     liste = [...(Array.isArray(genel) ? genel : []), ...(Array.isArray(sayfa) ? sayfa : [])];
+    bilesenler = (sayfaVerisi && Array.isArray(sayfaVerisi.bilesenler)) ? sayfaVerisi.bilesenler : [];
   } catch (e) { return; }
+
+  // ---- bilesen modeli: alanlar / gorunurluk / siralama ----
+  for (const b of bilesenler) {
+    const alan = b.alanlar || {};
+    const hedef = (ek) => document.querySelector(`[data-hepon-edit="${b.anahtar}.${ek}"]`);
+    const baslik = hedef("title");
+    if (baslik && alan.title) baslik.textContent = alan.title;
+    const aciklama = hedef("description");
+    if (aciklama && alan.description) aciklama.textContent = alan.description;
+    const gorsel = hedef("image");
+    if (gorsel && alan.image) { gorsel.removeAttribute("srcset"); gorsel.src = alan.image; }
+    const buton = hedef("cta");
+    if (buton) {
+      if (alan.button_text) {
+        const metin = buton.querySelector(".elementor-button-text") || buton;
+        metin.textContent = alan.button_text;
+      }
+      if (alan.button_url) buton.setAttribute("href", alan.button_url);
+    }
+    const kok = document.querySelector(`[data-hepon-component="${b.anahtar}"]`);
+    if (kok) {
+      if (b.gorunur === false) kok.style.setProperty("display", "none", "important");
+      if (b.sira != null) kok.style.setProperty("order", String(b.sira));
+    }
+  }
+
   if (!liste.length) return;
 
   function bul(secici) {
