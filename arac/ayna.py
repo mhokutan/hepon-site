@@ -34,6 +34,7 @@ SAYFALAR = {
     'hakkimizda': ('hakkimizda', 'Hakkımızda | Hepon Sigorta', None),
     'hesabim': ('hesabim', 'Hesabım | Hepon Sigorta', ('js', 'hesabim')),
     'yonetim': ('yonetim', 'Yönetim | Hepon Sigorta', ('js', 'yonetim')),
+    'icerik': ('icerik', 'İçerik Yönetimi | Hepon Sigorta', ('js', 'icerik')),
 }
 
 # ana sayfa kartlari: data-product -> hedef sayfa
@@ -338,8 +339,8 @@ def calistir(indirme=True):
             elif cta[0] == 'js':
                 src = src.replace('</body>', f'<script src="/akis/{cta[1]}.js"></script>\n</body>', 1)
 
-        # yonetim paneli arama motorlarina kapali kalsin
-        if slug == 'yonetim':
+        # yonetici panelleri arama motorlarina kapali kalsin
+        if slug in ('yonetim', 'icerik'):
             src = src.replace('</title>', '</title>\n<meta name="robots" content="noindex, nofollow">', 1)
 
         # menu yedek CSS'i her sayfada
