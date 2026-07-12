@@ -32,6 +32,8 @@ SAYFALAR = {
     'mesleki-sorumluluk-sigortalari': ('mesleki-sorumluluk-sigortalari', 'Mesleki Sorumluluk Sigortaları | Hepon Sigorta', ('link', '/iletisim/')),
     'uyelik': ('uyelik', 'Üyelik | Hepon Sigorta', None),
     'hakkimizda': ('hakkimizda', 'Hakkımızda | Hepon Sigorta', None),
+    'hesabim': ('hesabim', 'Hesabım | Hepon Sigorta', ('js', 'hesabim')),
+    'yonetim': ('yonetim', 'Yönetim | Hepon Sigorta', ('js', 'yonetim')),
 }
 
 # ana sayfa kartlari: data-product -> hedef sayfa
@@ -158,7 +160,7 @@ def bos_butonlari_bagla(src, cta):
         yeni_blok = None
         def hedefle(hedef):
             return re.sub(r'href="#?"', f'href="{hedef}"', blok, count=1)
-        if 'Teklif' in metin and cta:
+        if 'Teklif' in metin and cta and cta[0] in ('modal', 'akis', 'link'):
             if cta[0] == 'modal':
                 yeni_blok = blok.replace('class="elementor-button', 'class="hepon-teklif-trigger elementor-button', 1)
                 yeni_blok = re.sub(r'href="#?"', f'href="#" data-product="{cta[1]}"', yeni_blok, count=1)
@@ -251,7 +253,6 @@ def calistir(indirme=True):
         src = src.replace('1217253.eu14.myftpupload.com%20Managed%20WordPress%20Site', 'Hepon%20Sigorta')
         src = src.replace('1217253.eu14.myftpupload.com Managed WordPress Site', 'Hepon Sigorta')
         src = src.replace('href="index.html"', 'href="/"')
-        src = src.replace('href="/hesabim/"', 'href="/profil/"')
 
         # logo sadelestirme
         src = src.replace('src="/wp/wp-content/uploads/2025/12/heponla-logo.png"', 'src="/logo-heponla.png"')
@@ -280,6 +281,12 @@ def calistir(indirme=True):
                 ek = ('<link rel="stylesheet" href="/akis/akis.css">\n'
                       f'<script src="/akis/{cta[1]}.js"></script>\n')
                 src = src.replace('</body>', ek + '</body>', 1)
+            elif cta[0] == 'js':
+                src = src.replace('</body>', f'<script src="/akis/{cta[1]}.js"></script>\n</body>', 1)
+
+        # yonetim paneli arama motorlarina kapali kalsin
+        if slug == 'yonetim':
+            src = src.replace('</title>', '</title>\n<meta name="robots" content="noindex, nofollow">', 1)
 
         hedef = os.path.join(PUB, yerel, 'index.html') if yerel else os.path.join(PUB, 'index.html')
         os.makedirs(os.path.dirname(hedef), exist_ok=True)
