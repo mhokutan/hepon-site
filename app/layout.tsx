@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={yaziTipi.className}>
         <header className="topbar">
           <div className="wrap">
-            <a href="/"><img src="/logo-hepon.svg" alt="Hepon Sigorta" /></a>
+            <a href="/"><img src="/logo-heponla.png" alt="Heponla" /></a>
             <nav>
               <div className="menu-acilir">
                 <a href="/#urunler">Sigorta Ürünleri <span className="ok">▾</span></a>
@@ -39,7 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <a href="/hakkimizda/">Hakkımızda</a>
               <a href="/sss/">S.S.S</a>
               <a href="/iletisim/">İletişim</a>
-              <a className="cta" href="/profil/">Giriş Yap / Üye Ol</a>
+              <a className="cta" href="/uyelik/">Üye Ol / Giriş Yap</a>
             </nav>
           </div>
         </header>
