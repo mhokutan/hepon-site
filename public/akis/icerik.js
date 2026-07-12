@@ -229,6 +229,78 @@
       return cevap && cevap.ok;
     }
 
+    // ---- TASARIM KARTLARI: menu ve footer gorunumu (tum sayfalara uygulanir) ----
+    // Kayitlar genel CSS secicileriyle tutulur; cms.js tum eslesmelere uygular.
+    const stilKaydi = (selector, style) => ({ selector, tag: "DIV", text: null, href: null, src: null, style });
+
+    const MENU_TEMALARI = {
+      "Beyaz (varsayılan)": [
+        stilKaydi("header > .e-con", { "background-color": "#ffffff" }),
+        stilKaydi("header .e-n-menu-title-text", { color: "#111827" }),
+      ],
+      "Koyu": [
+        stilKaydi("header > .e-con", { "background-color": "#111827" }),
+        stilKaydi("header .e-n-menu-title-text", { color: "#ffffff" }),
+      ],
+      "Hepon Mavi": [
+        stilKaydi("header > .e-con", { "background-color": "#1883A8" }),
+        stilKaydi("header .e-n-menu-title-text", { color: "#ffffff" }),
+      ],
+    };
+    const FOOTER_TEMALARI = {
+      "Siyah (varsayılan)": [
+        stilKaydi("footer", { "background-color": "#000000" }),
+        stilKaydi("footer p, footer li, footer span, footer a", { color: "#9aa4b2" }),
+        stilKaydi("footer h2, footer h3, footer h6", { color: "#ffffff" }),
+      ],
+      "Lacivert": [
+        stilKaydi("footer", { "background-color": "#13263D" }),
+        stilKaydi("footer p, footer li, footer span, footer a", { color: "#B9C6DD" }),
+        stilKaydi("footer h2, footer h3, footer h6", { color: "#ffffff" }),
+      ],
+      "Açık": [
+        stilKaydi("footer", { "background-color": "#FAF9F7" }),
+        stilKaydi("footer p, footer li, footer span, footer a", { color: "#4A5568" }),
+        stilKaydi("footer h2, footer h3, footer h6", { color: "#13263D" }),
+      ],
+    };
+
+    function tasarimKarti(gorunum, baslik, temalar, ozel) {
+      const v = document.querySelector(`[data-se-view="${gorunum}"]`);
+      if (!v) return;
+      const kart = document.createElement("article");
+      kart.className = "se-card";
+      kart.innerHTML = `
+        <div class="se-card-head"><b>${baslik}</b><span>Hazır tema seç veya kendi renklerini uygula — tüm sayfalarda geçerli</span></div>
+        <div style="padding:16px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+            ${Object.keys(temalar).map((ad) => `<button type="button" data-tema="${esc(ad)}" class="se-btn" style="font-size:12.5px">${esc(ad)}</button>`).join("")}
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <label style="font-size:12px;color:#6F7E90">Arka plan <input type="color" data-ozel-zemin value="${ozel.zemin}" style="width:40px;height:30px;border:1px solid #DFE8ED;border-radius:8px;padding:2px;vertical-align:middle"></label>
+            <label style="font-size:12px;color:#6F7E90">Yazı rengi <input type="color" data-ozel-metin value="${ozel.metin}" style="width:40px;height:30px;border:1px solid #DFE8ED;border-radius:8px;padding:2px;vertical-align:middle"></label>
+            <button type="button" data-ozel-uygula class="se-btn primary" style="font-size:12.5px">Renkleri uygula ve yayınla</button>
+          </div>
+          <span data-tasarim-durum style="display:block;margin-top:10px;font-size:12.5px;color:#1DB586"></span>
+        </div>`;
+      v.appendChild(kart);
+      const durum = kart.querySelector("[data-tasarim-durum]");
+      const gonder = async (kayitlar) => {
+        durum.textContent = "Yayınlanıyor…";
+        const tamam = await yayinla(kayitlar);
+        durum.textContent = tamam ? "✓ Tasarım tüm sayfalarda yayında" : "Yayınlanamadı";
+        setTimeout(() => { durum.textContent = ""; }, 3000);
+      };
+      kart.querySelectorAll("[data-tema]").forEach((b) => {
+        b.addEventListener("click", () => gonder(temalar[b.dataset.tema]));
+      });
+      kart.querySelector("[data-ozel-uygula]").addEventListener("click", () => {
+        const zemin = kart.querySelector("[data-ozel-zemin]").value;
+        const metin = kart.querySelector("[data-ozel-metin]").value;
+        gonder(ozel.kayitlar(zemin, metin));
+      });
+    }
+
     siteyiCozumle().then((doc) => {
       const header = doc.querySelector("header");
       const footer = doc.querySelector("footer");
@@ -293,6 +365,22 @@
       }
       duzenleyiciKur("footer", "Footer düzenleme",
         "İletişim bilgileri ve footer metinleri — tüm sayfalarda geçerli", footerSatirlari, yayinla);
+
+      // tasarim kartlari (metin duzenleyicilerin altina eklenir)
+      tasarimKarti("menus", "Menü tasarımı", MENU_TEMALARI, {
+        zemin: "#ffffff", metin: "#111827",
+        kayitlar: (zemin, metin) => [
+          stilKaydi("header > .e-con", { "background-color": zemin }),
+          stilKaydi("header .e-n-menu-title-text", { color: metin }),
+        ],
+      });
+      tasarimKarti("footer", "Footer tasarımı", FOOTER_TEMALARI, {
+        zemin: "#000000", metin: "#9aa4b2",
+        kayitlar: (zemin, metin) => [
+          stilKaydi("footer", { "background-color": zemin }),
+          stilKaydi("footer p, footer li, footer span, footer a", { color: metin }),
+        ],
+      });
     });
 
     // SEO bolumu: gercek kayit (per sayfa __seo__ kaydi, kaydet = taslak + yayin)
