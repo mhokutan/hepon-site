@@ -233,33 +233,29 @@
     // Kayitlar genel CSS secicileriyle tutulur; cms.js tum eslesmelere uygular.
     const stilKaydi = (selector, style) => ({ selector, tag: "DIV", text: null, href: null, src: null, style });
 
+    // menu zemini iki katmanlidir: dis konteyner + icindeki beyaz katman (8737862)
+    const menuZemin = (renk) => [
+      stilKaydi("header > .e-con", { "background-color": renk }),
+      stilKaydi('header [class*="elementor-element-8737862"]', { "background-color": renk }),
+    ];
     const MENU_TEMALARI = {
-      "Beyaz (varsayılan)": [
-        stilKaydi("header > .e-con", { "background-color": "#ffffff" }),
-        stilKaydi("header .e-n-menu-title-text", { color: "#111827" }),
-      ],
-      "Koyu": [
-        stilKaydi("header > .e-con", { "background-color": "#111827" }),
-        stilKaydi("header .e-n-menu-title-text", { color: "#ffffff" }),
-      ],
-      "Hepon Mavi": [
-        stilKaydi("header > .e-con", { "background-color": "#1883A8" }),
-        stilKaydi("header .e-n-menu-title-text", { color: "#ffffff" }),
-      ],
+      "Beyaz (varsayılan)": [...menuZemin("#ffffff"), stilKaydi("header .e-n-menu-title-text", { color: "#111827" })],
+      "Koyu": [...menuZemin("#111827"), stilKaydi("header .e-n-menu-title-text", { color: "#ffffff" })],
+      "Hepon Mavi": [...menuZemin("#1883A8"), stilKaydi("header .e-n-menu-title-text", { color: "#ffffff" })],
     };
     const FOOTER_TEMALARI = {
       "Siyah (varsayılan)": [
-        stilKaydi("footer", { "background-color": "#000000" }),
+        stilKaydi("footer, footer .vamtam-has-theme-cp", { "background-color": "#000000" }),
         stilKaydi("footer p, footer li, footer span, footer a", { color: "#9aa4b2" }),
         stilKaydi("footer h2, footer h3, footer h6", { color: "#ffffff" }),
       ],
       "Lacivert": [
-        stilKaydi("footer", { "background-color": "#13263D" }),
+        stilKaydi("footer, footer .vamtam-has-theme-cp", { "background-color": "#13263D" }),
         stilKaydi("footer p, footer li, footer span, footer a", { color: "#B9C6DD" }),
         stilKaydi("footer h2, footer h3, footer h6", { color: "#ffffff" }),
       ],
       "Açık": [
-        stilKaydi("footer", { "background-color": "#FAF9F7" }),
+        stilKaydi("footer, footer .vamtam-has-theme-cp", { "background-color": "#FAF9F7" }),
         stilKaydi("footer p, footer li, footer span, footer a", { color: "#4A5568" }),
         stilKaydi("footer h2, footer h3, footer h6", { color: "#13263D" }),
       ],
@@ -370,14 +366,14 @@
       tasarimKarti("menus", "Menü tasarımı", MENU_TEMALARI, {
         zemin: "#ffffff", metin: "#111827",
         kayitlar: (zemin, metin) => [
-          stilKaydi("header > .e-con", { "background-color": zemin }),
+          ...menuZemin(zemin),
           stilKaydi("header .e-n-menu-title-text", { color: metin }),
         ],
       });
       tasarimKarti("footer", "Footer tasarımı", FOOTER_TEMALARI, {
         zemin: "#000000", metin: "#9aa4b2",
         kayitlar: (zemin, metin) => [
-          stilKaydi("footer", { "background-color": zemin }),
+          stilKaydi("footer, footer .vamtam-has-theme-cp", { "background-color": zemin }),
           stilKaydi("footer p, footer li, footer span, footer a", { color: metin }),
         ],
       });
