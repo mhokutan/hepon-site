@@ -84,6 +84,67 @@
     if (b) b.textContent = String(deger);
   }
 
+  /** PDF uclari x-admin basligi istedigi icin duz link yerine blob indirme */
+  async function pdfAc(yol) {
+    const r = await fetch("/api/admin" + yol, { headers: { "x-admin": token } });
+    if (!r.ok) return alert("PDF alınamadı");
+    const url = URL.createObjectURL(await r.blob());
+    window.open(url, "_blank");
+  }
+
+  const URUN_SECENEK = '<option value="dask">DASK</option><option value="travel">Seyahat Sağlık</option>' +
+    '<option value="trafik">Trafik</option><option value="kasko">Kasko</option>' +
+    '<option value="imm">İMM</option><option value="tss">Tamamlayıcı Sağlık</option>';
+
+  async function policeleriCiz() {
+    const kap = document.querySelector('[data-admin-view="policies"] .adm-card');
+    if (!kap) return;
+    const liste = await api("/policeler");
+    if (!Array.isArray(liste)) return;
+    kap.innerHTML = `<h2 style="margin-top:0">Poliçeler</h2>
+      <form class="yp-form" id="ypPoliceForm">
+        <input name="nationalId" placeholder="Müşteri TCKN (kayıtlı olmalı)" required>
+        <input name="policyNo" placeholder="Poliçe no (örn. HEP-2026-0002)" required>
+        <input name="companyName" placeholder="Sigorta şirketi" required>
+        <select name="productType">${URUN_SECENEK}</select>
+        <input name="soldPremium" type="number" step="0.01" placeholder="Prim (TL)">
+        <input name="requestId" type="number" placeholder="İlişkili talep no (ops.)">
+        <input name="startDate" type="date" title="Başlangıç"><input name="endDate" type="date" title="Bitiş">
+        <button type="submit">+ Poliçe kaydet</button>
+      </form>
+      <span id="ypPoliceDurum" style="font-size:12.5px;color:#1DB586"></span>
+      <div class="table-wrap" style="margin-top:12px"><table class="adm-table"><thead>
+        <tr><th>POLİÇE NO</th><th>MÜŞTERİ</th><th>ÜRÜN</th><th>ŞİRKET</th><th>PRİM</th><th>BİTİŞ</th><th></th></tr></thead><tbody>` +
+      (liste.map((p) => `<tr><td><b>${esc(p.policy_no)}</b></td><td>${esc(p.full_name || p.phone || "-")}</td>` +
+        `<td>${esc(URUN[p.product_type] || p.product_type)}</td><td>${esc(p.company_name)}</td>` +
+        `<td>${p.sold_premium ? Number(p.sold_premium).toLocaleString("tr-TR") + " TL" : "-"}</td>` +
+        `<td>${tarih(p.end_date)}</td>` +
+        `<td><button data-police-pdf="${esc(p.policy_no)}" style="border:1px solid #DFE8ED;background:#fff;border-radius:999px;padding:4px 12px;font-size:12px;cursor:pointer;font-family:inherit">PDF</button></td></tr>`).join("") ||
+        '<tr><td colspan="7">Henüz poliçe yok. Yukarıdaki formla ilk poliçeyi girebilirsin.</td></tr>') +
+      "</tbody></table></div>";
+    document.getElementById("ypPoliceForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const cevap = await api("/policeler", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nationalId: f.get("nationalId"), policyNo: f.get("policyNo"),
+          companyName: f.get("companyName"), productType: f.get("productType"),
+          soldPremium: f.get("soldPremium") ? Number(f.get("soldPremium")) : null,
+          requestId: f.get("requestId") ? Number(f.get("requestId")) : null,
+          startDate: f.get("startDate") || null, endDate: f.get("endDate") || null,
+        }),
+      });
+      document.getElementById("ypPoliceDurum").textContent =
+        cevap.ok ? "✓ Poliçe kaydedildi" : (cevap.error || "Kaydedilemedi");
+      if (cevap.ok) { e.target.reset(); policeleriCiz(); }
+    });
+    kap.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-police-pdf]");
+      if (b) pdfAc("/police/" + encodeURIComponent(b.dataset.policePdf) + "/pdf");
+    });
+  }
+
   async function kampanyalariCiz() {
     const liste = await api("/kampanyalar");
     const kap = document.getElementById("ypKampListe");
@@ -139,6 +200,9 @@
     if (tbody) tbody.innerHTML = (ozet.lastRequests || []).map(satir).join("") ||
       '<tr><td colspan="4">Henüz talep yok.</td></tr>';
 
+    rozetAyarla("policies", ozet.policyCount ?? 0);
+    policeleriCiz();
+
     // musteriler goruntusu
     const musteriler = await api("/musteriler");
     const mKap = document.querySelector('[data-admin-view="customers"] .adm-card');
@@ -150,16 +214,24 @@
           '<tr><td colspan="5">Kayıtlı müşteri yok.</td></tr>') + "</tbody></table></div>";
     }
 
-    // teklif talepleri goruntusu
+    // teklif talepleri: kim tamamlamis (police kesilmis), kim yarim birakmis
     const talepler = await api("/talepler");
     const tKap = document.querySelector('[data-admin-view="quotes"] .adm-card');
     if (tKap && Array.isArray(talepler)) {
+      const rozet = (t) => t.tamamlandi
+        ? '<span style="background:#E4F7EF;color:#1DB586;border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:700">✓ Tamamlandı</span>'
+        : '<span style="background:#FFF7E6;color:#B7791F;border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:700">Yarım kaldı</span>';
       tKap.innerHTML = `<div class="table-wrap"><table class="adm-table"><thead>
-        <tr><th>MÜŞTERİ</th><th>İLETİŞİM</th><th>ÜRÜN</th><th>DURUM</th><th>TARİH</th></tr></thead><tbody>` +
-        (talepler.map((t) => `<tr><td><b>${esc(t.full_name || "-")}</b></td>` +
+        <tr><th>NO</th><th>MÜŞTERİ</th><th>İLETİŞİM</th><th>ÜRÜN</th><th>AŞAMA</th><th>SONUÇ</th><th>TARİH</th><th></th></tr></thead><tbody>` +
+        (talepler.map((t) => `<tr><td>${t.id}</td><td><b>${esc(t.full_name || "-")}</b></td>` +
           `<td>${esc(t.phone || t.email || "-")}</td><td>${esc(URUN[t.product_type] || t.product_type)}</td>` +
-          `<td>${esc(DURUM[t.status] || t.status)}</td><td>${tarih(t.created_at)}</td></tr>`).join("") ||
-          '<tr><td colspan="5">Henüz talep yok.</td></tr>') + "</tbody></table></div>";
+          `<td>${esc(DURUM[t.status] || t.status)}</td><td>${rozet(t)}</td><td>${tarih(t.created_at)}</td>` +
+          `<td><button data-talep-pdf="${t.id}" style="border:1px solid #DFE8ED;background:#fff;border-radius:999px;padding:4px 12px;font-size:12px;cursor:pointer;font-family:inherit">PDF</button></td></tr>`).join("") ||
+          '<tr><td colspan="8">Henüz talep yok.</td></tr>') + "</tbody></table></div>";
+      tKap.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-talep-pdf]");
+        if (b) pdfAc("/talepler/" + b.dataset.talepPdf + "/pdf");
+      });
     }
 
     // kampanya yonetimi

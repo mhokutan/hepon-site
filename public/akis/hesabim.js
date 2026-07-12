@@ -40,12 +40,26 @@
 
   // Policeler (hem policeler sekmesi hem genel bakis karti)
   const policeler = veri.policies || [];
+  const URUN_TAM = { dask: "DASK Sigortası", travel: "Seyahat Sağlık Sigortası", trafik: "Trafik Sigortası",
+                     kasko: "Kasko Sigortası", imm: "İMM Sigortası", tss: "Tamamlayıcı Sağlık Sigortası" };
   const policeHtml = policeler.length
     ? policeler.map((p) => `<div class="hp-policy"><i class="hp-company">${esc((p.company_name || "H")[0])}</i>` +
-        `<div><b>${esc(p.product_type || "Poliçe")}</b>` +
-        `<span>${esc(p.policy_no || "")} · ${tarih(p.start_date)} – ${tarih(p.end_date)}</span></div><em>Aktif</em></div>`).join("")
+        `<div><b>${esc(URUN_TAM[p.product_type] || p.product_type || "Poliçe")}</b>` +
+        `<span>${esc(p.policy_no || "")} · ${esc(p.company_name || "")} · ${tarih(p.start_date)} – ${tarih(p.end_date)} · ` +
+        `<a href="#" data-police-indir="${esc(p.policy_no)}">Belgeyi indir (PDF)</a></span></div><em>Aktif</em></div>`).join("")
     : `<div class="hp-policy"><div><b>Henüz poliçeniz yok</b>` +
       `<span>Teklif alarak ilk poliçenizi oluşturabilirsiniz.</span></div></div>`;
+
+  // police PDF'i oturum basligiyla indirilir (duz link basligi tasiyamaz)
+  document.addEventListener("click", async (ev) => {
+    const b = ev.target.closest("[data-police-indir]");
+    if (!b) return;
+    ev.preventDefault();
+    const r = await fetch("/api/profile/police/" + encodeURIComponent(b.dataset.policeIndir) + "/pdf",
+      { headers: { "x-session": token } });
+    if (!r.ok) return alert("Belge alınamadı");
+    window.open(URL.createObjectURL(await r.blob()), "_blank");
+  });
   document.querySelectorAll('[data-view="policies"] .hp-card, [data-view="renewals"] .hp-card').forEach((k) => {
     if (!k.querySelector("table")) k.innerHTML = policeHtml;
   });
