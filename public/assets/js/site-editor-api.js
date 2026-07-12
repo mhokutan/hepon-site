@@ -229,16 +229,56 @@ window.addEventListener("DOMContentLoaded", () => {
     ev.target.value = "";
   });
 
-  // header/footer duzenlemeleri tum sayfalar icin ('*') kaydedilsin
+  // Uygula sonrasi: header/footer kayitlari '*' olur + BAGLANTI DOGRULAMA.
+  // Ic baglantilar kontrol edilir; sayfa yoksa capa onerisi otomatik uygulanir
+  // (orn. '/urunler' sitede yok -> '/#urunler' capasina cevrilir), aksi halde uyarilir.
+  const BILINEN_YOLLAR = new Set(["/", "/hakkimizda/", "/iletisim/", "/sss/", "/hizmetlerimiz/",
+    "/uyelik/", "/hesabim/", "/profil/", "/dask/", "/seyahat/", "/trafik-sigortasi/",
+    "/kasko-sigortasi/", "/imm-sigortasi/", "/dask-sigortasi/", "/seyahat-saglik-sigortasi/",
+    "/tamamlayici-saglik-sigortasi/", "/yabanci-saglik-sigortasi/", "/ferdi-kaza-sigortasi/",
+    "/mesleki-sorumluluk-sigortalari/"]);
+
+  async function baglantiDogrula(kayit, el) {
+    let h = (kayit.href || "").trim();
+    if (!h || /^(https?:|tel:|mailto:|#|\/#)/.test(h)) return;
+    if (!h.startsWith("/")) { h = "/" + h; }
+    const koklu = h.endsWith("/") ? h : h + "/";
+    if (BILINEN_YOLLAR.has(h) || BILINEN_YOLLAR.has(koklu)) {
+      kayit.href = BILINEN_YOLLAR.has(h) ? h : koklu;
+      if (el && el.tagName === "A") el.setAttribute("href", kayit.href);
+      return;
+    }
+    // sayfa gercekten var mi?
+    let bulundu = false;
+    try { bulundu = (await fetch(koklu, { method: "HEAD" })).ok; } catch (e) {}
+    if (bulundu) return;
+    // ana sayfada ayni adli capa var mi? (orn. #urunler)
+    const capa = h.replace(/^\//, "").replace(/\/$/, "");
+    let capaVar = false;
+    try {
+      const anaSayfa = await fetch("/").then((r) => r.text());
+      capaVar = anaSayfa.includes('id="' + capa + '"');
+    } catch (e) {}
+    if (capaVar) {
+      kayit.href = "/#" + capa;
+      if (el && el.tagName === "A") el.setAttribute("href", kayit.href);
+      status.textContent = "'" + h + "' diye bir sayfa yok; bağlantı otomatik '/#" + capa + "' çapasına düzeltildi.";
+    } else {
+      status.textContent = "⚠ Dikkat: '" + h + "' sitede bulunamadı, bu bağlantı 404 verir. Kaydetmeden önce düzeltmen önerilir.";
+    }
+  }
+
   const applyBtn = document.querySelector("#leApply");
   if (applyBtn) {
     const orijinal = applyBtn.onclick;
-    applyBtn.onclick = (e) => {
+    applyBtn.onclick = async (e) => {
       if (orijinal) orijinal.call(applyBtn, e);
       const el = window.heponlaLiveEditorSelected;
       const d = window.heponlaLiveEditorChanges || [];
       const son = d[d.length - 1];
-      if (el && son && el.closest("header, footer")) son.page = "*";
+      if (!son) return;
+      if (el && el.closest("header, footer")) son.page = "*";
+      await baglantiDogrula(son, el);
     };
   }
 
