@@ -59,8 +59,35 @@
     try { return document.querySelector(secici); } catch (e) { return null; }
   }
 
+  // anahtar veya seciciyle hedef bul (aksiyonlar icin bilesen koku tercih edilir)
+  function kokBul(secici) {
+    const anahtar = secici.startsWith("data-hepon-edit: ") ? secici.slice(17) : secici;
+    return document.querySelector(`[data-hepon-component="${anahtar}"]`) ||
+      document.querySelector(`[data-hepon-edit="${anahtar}"]`) ||
+      (document.querySelector(`[data-hepon-edit^="${anahtar}."]`) || {}).closest?.("[data-id]") ||
+      bul(secici);
+  }
+
   for (const d of liste) {
     if (!d.yayin) continue;
+
+    // editorun kopyala/sil aksiyonlari
+    if (d.yayin.action) {
+      const kok = kokBul(d.secici);
+      if (!kok) continue;
+      if (d.yayin.action === "delete") {
+        kok.style.setProperty("display", "none", "important");
+      } else if (d.yayin.action === "duplicate" && !kok.dataset.heponKopyalandi) {
+        kok.dataset.heponKopyalandi = "1";
+        const kopya = kok.cloneNode(true);
+        kopya.removeAttribute("data-hepon-live-selected");
+        // kopyadaki anahtarlari temizle ki sonraki duzenlemeler karismasin
+        kopya.querySelectorAll("[data-hepon-edit]").forEach((x) => x.removeAttribute("data-hepon-edit"));
+        kopya.removeAttribute("data-hepon-component");
+        kok.after(kopya);
+      }
+      continue;
+    }
 
     // sayfa SEO kaydi
     if (d.secici === "__seo__") {
