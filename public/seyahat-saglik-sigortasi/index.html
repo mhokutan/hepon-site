@@ -178,21 +178,38 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 			}
 		</style>
 		<style id="hepon-menu-yedek">
-.e-n-menu-item{position:relative}
+/* DIKKAT: .e-n-menu-item'a position:relative VERME - Elementor JS'inin panel
+   konumlandirmasini bozuyor (paneli li'ye gore hesaplatir, ekran disina tasar). */
 .e-n-menu-item:hover > .e-con,
 .e-n-menu-item:focus-within > .e-con{
   display:flex !important;
-  position:absolute; top:100%; left:50%; transform:translateX(-50%);
+  position:absolute; top:100%; left:0; right:0;
   z-index:99999; background:#fff;
-  min-width:min(920px,94vw); max-width:96vw;
   box-shadow:0 30px 70px rgba(11,18,32,.22);
   border-radius:0 0 18px 18px; overflow:hidden;
 }
 @media (max-width:1024px){
   .e-n-menu-item:hover > .e-con,
-  .e-n-menu-item:focus-within > .e-con{position:static;transform:none;min-width:0;box-shadow:none}
+  .e-n-menu-item:focus-within > .e-con{position:static;box-shadow:none}
 }
 </style>
+<script id="hepon-menu-yedek-devir">
+/* Elementor JS'i basariyla baslarsa CSS yedegini kaldir: menuyu tek sahip yonetsin. */
+(function () {
+  var deneme = 0;
+  var sayac = setInterval(function () {
+    deneme += 1;
+    var hazir = window.elementorFrontend && window.elementorFrontend.elementsHandler;
+    if (hazir) {
+      var stil = document.getElementById("hepon-menu-yedek");
+      if (stil) stil.remove();
+      clearInterval(sayac);
+    } else if (deneme > 40) {
+      clearInterval(sayac); /* 10 sn icinde baslamadi: yedek devrede kalir */
+    }
+  }, 250);
+})();
+</script>
 </head>
 <body class="wp-singular page-template page-template-elementor_header_footer page page-id-987890 wp-custom-logo wp-embed-responsive wp-theme-aifusionx full header-layout-logo-menu has-page-header no-middle-header responsive-layout vamtam-is-elementor elementor-active elementor-pro-active vamtam-wc-cart-empty wc-product-gallery-slider-active vamtam-font-smoothing layout-full elementor-default elementor-template-full-width elementor-kit-4 elementor-page elementor-page-987890">
 	<div id="top"></div>

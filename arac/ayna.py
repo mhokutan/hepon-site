@@ -92,21 +92,38 @@ FOOTER_TABLO = [
 # Elementor'un menu JS'i calismasa bile acilir menuyu calistiran saf CSS yedegi.
 # JS calisirsa paneli DOM'da tasidigi icin bu kurallar devreye girmez, cakismaz.
 MENU_YEDEK_CSS = '''<style id="hepon-menu-yedek">
-.e-n-menu-item{position:relative}
+/* DIKKAT: .e-n-menu-item'a position:relative VERME - Elementor JS'inin panel
+   konumlandirmasini bozuyor (paneli li'ye gore hesaplatir, ekran disina tasar). */
 .e-n-menu-item:hover > .e-con,
 .e-n-menu-item:focus-within > .e-con{
   display:flex !important;
-  position:absolute; top:100%; left:50%; transform:translateX(-50%);
+  position:absolute; top:100%; left:0; right:0;
   z-index:99999; background:#fff;
-  min-width:min(920px,94vw); max-width:96vw;
   box-shadow:0 30px 70px rgba(11,18,32,.22);
   border-radius:0 0 18px 18px; overflow:hidden;
 }
 @media (max-width:1024px){
   .e-n-menu-item:hover > .e-con,
-  .e-n-menu-item:focus-within > .e-con{position:static;transform:none;min-width:0;box-shadow:none}
+  .e-n-menu-item:focus-within > .e-con{position:static;box-shadow:none}
 }
-</style>'''
+</style>
+<script id="hepon-menu-yedek-devir">
+/* Elementor JS'i basariyla baslarsa CSS yedegini kaldir: menuyu tek sahip yonetsin. */
+(function () {
+  var deneme = 0;
+  var sayac = setInterval(function () {
+    deneme += 1;
+    var hazir = window.elementorFrontend && window.elementorFrontend.elementsHandler;
+    if (hazir) {
+      var stil = document.getElementById("hepon-menu-yedek");
+      if (stil) stil.remove();
+      clearInterval(sayac);
+    } else if (deneme > 40) {
+      clearInterval(sayac); /* 10 sn icinde baslamadi: yedek devrede kalir */
+    }
+  }, 250);
+})();
+</script>'''
 
 def etiketle_degistir(blok, tablo):
     for eski, yeni, href in tablo:
