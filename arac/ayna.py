@@ -185,6 +185,16 @@ def asset_indir(html_listesi):
         yeni_icerik = yeni_icerik.replace('https:\\/\\/1217253.eu14.myftpupload.com\\/wp-includes', '\\/wp\\/wp-includes')
         if yeni_icerik != icerik:
             open(f, 'w', encoding='utf-8').write(yeni_icerik)
+    # HTML'de gorunmeyen, calisma zamaninda dinamik yuklenen dosyalar
+    EK_ASSETLER = [
+        '/wp-content/themes/aifusionx/vamtam/assets/js/low-priority.js',
+        '/wp-includes/js/wp-emoji-release.min.js',
+    ]
+    for u in EK_ASSETLER:
+        hedef = PUB + '/wp' + u
+        if not os.path.exists(hedef):
+            indir(BASE + u, hedef)
+
     # Elementor webpack runtime'larindaki tembel JS parcalari (mega menu vb.)
     parca_sayisi = 0
     for eklenti in ['elementor', 'elementor-pro']:
