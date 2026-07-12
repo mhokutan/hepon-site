@@ -1,7 +1,8 @@
+/* Palet, tasarimcinin temasiyla (Hepon mavi) hizali - kaynak: public/modal/modal.css */
 :root {
-  --lacivert: #16294a; --lacivert-koyu: #0d1b33; --turkuaz: #0ea5b1;
-  --turkuaz-koyu: #0b8791; --zemin: #f8fafc; --beyaz: #ffffff;
-  --gri: #64748b; --cizgi: #e5eaf1; --golge: 0 10px 30px rgba(22,41,74,.10);
+  --lacivert: #13263D; --lacivert-koyu: #0E1D2E; --turkuaz: #30B6E4;
+  --turkuaz-koyu: #1883A8; --zemin: #F5F8FA; --beyaz: #ffffff;
+  --gri: #6F7E90; --cizgi: #DFE8ED; --golge: 0 10px 30px rgba(19,38,61,.10);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -26,8 +27,8 @@ body { background: var(--zemin); color: var(--lacivert); line-height: 1.6; }
 .hero-maskot { display: flex; justify-content: center; animation: yuz 5s ease-in-out infinite; }
 @keyframes yuz { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 
-.btn { display: inline-block; background: linear-gradient(180deg, var(--turkuaz), var(--turkuaz-koyu)); color: #fff; border: none; padding: 14px 28px; border-radius: 12px; font-size: 15.5px; font-weight: 700; cursor: pointer; font-family: inherit; text-decoration: none; transition: transform .15s, box-shadow .15s; box-shadow: 0 6px 18px rgba(14,165,177,.35); }
-.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(14,165,177,.45); }
+.btn { display: inline-block; background: var(--turkuaz); color: #fff; border: none; padding: 14px 28px; border-radius: 999px; font-size: 15.5px; font-weight: 700; cursor: pointer; font-family: inherit; text-decoration: none; transition: transform .15s, box-shadow .15s, background .15s; box-shadow: 0 6px 18px rgba(48,182,228,.35); }
+.btn:hover { background: var(--turkuaz-koyu); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(48,182,228,.45); }
 .btn:disabled { opacity: .55; cursor: default; transform: none; }
 .btn-gri { background: #eef2f8; color: var(--lacivert); box-shadow: none; margin-right: 10px; }
 .btn-cerceve { background: transparent; border: 2px solid rgba(255,255,255,.45); box-shadow: none; }
