@@ -1,0 +1,32 @@
+/* Gercek teklif akisi modali - tema paletiyle (bkz. modal.css) */
+.hepon-akis-modal { position: fixed; inset: 0; z-index: 999999; display: none; align-items: center; justify-content: center; padding: 24px; font-family: inherit; }
+.hepon-akis-modal.acik { display: flex; }
+.hepon-akis-perde { position: absolute; inset: 0; background: rgba(19, 38, 61, .55); }
+.hepon-akis-kutu { position: relative; width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto; background: #fff; border-radius: 20px; padding: 28px; box-shadow: 0 30px 80px rgba(19,38,61,.35); }
+.hepon-akis-kutu h3 { color: #13263D; font-size: 22px; margin: 0 0 4px; }
+.hepon-akis-kutu .aciklama { color: #6F7E90; font-size: 14px; margin: 0 0 18px; }
+.hepon-akis-kapat { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border: none; border-radius: 50%; background: #F5F8FA; color: #13263D; font-size: 18px; cursor: pointer; line-height: 1; }
+.hepon-akis-kapat:hover { background: #DFE8ED; }
+.hepon-akis-adimlar { display: flex; gap: 8px; margin-bottom: 20px; font-size: 12.5px; font-weight: 700; }
+.hepon-akis-adim { padding: 6px 14px; border-radius: 999px; background: #F5F8FA; color: #6F7E90; }
+.hepon-akis-adim.aktif { background: #30B6E4; color: #fff; }
+.hepon-akis-alan { margin-bottom: 14px; }
+.hepon-akis-alan label { display: block; font-size: 13px; font-weight: 600; color: #6F7E90; margin-bottom: 5px; }
+.hepon-akis-alan input, .hepon-akis-alan select { width: 100%; box-sizing: border-box; padding: 11px 13px; border: 1.5px solid #DFE8ED; border-radius: 12px; font-size: 15px; font-family: inherit; color: #13263D; background: #fff; }
+.hepon-akis-alan input:focus, .hepon-akis-alan select:focus { outline: none; border-color: #30B6E4; box-shadow: 0 0 0 4px rgba(48,182,228,.15); }
+.hepon-akis-satir { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.hepon-akis-radyolar { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; font-size: 14px; color: #13263D; }
+.hepon-akis-radyolar label { display: flex; align-items: center; gap: 6px; font-weight: 500; }
+.hepon-akis-not { font-size: 12.5px; color: #6F7E90; margin: 6px 0 0; }
+.hepon-akis-hata { background: #FDECEC; color: #D84C4C; border-radius: 12px; padding: 10px 14px; font-size: 13.5px; margin-bottom: 12px; display: none; }
+.hepon-akis-hata.goster { display: block; }
+.hepon-akis-btnlar { display: flex; gap: 10px; margin-top: 18px; }
+.hepon-akis-btn { border: none; border-radius: 999px; padding: 13px 26px; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; background: #30B6E4; color: #fff; transition: background .15s; }
+.hepon-akis-btn:hover { background: #1883A8; }
+.hepon-akis-btn:disabled { opacity: .55; cursor: default; }
+.hepon-akis-btn.gri { background: #EDF3F6; color: #13263D; }
+.hepon-akis-btn.gri:hover { background: #DDE8ED; }
+.hepon-akis-basari { text-align: center; padding: 22px 6px; }
+.hepon-akis-basari .rozet { width: 64px; height: 64px; border-radius: 50%; background: #E4F7EF; color: #1DB586; font-size: 30px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+body.hepon-akis-acik { overflow: hidden; }
+@media (max-width: 640px) { .hepon-akis-satir { grid-template-columns: 1fr; } .hepon-akis-kutu { padding: 20px; } }
